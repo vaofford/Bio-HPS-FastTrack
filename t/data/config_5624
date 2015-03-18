@@ -1,0 +1,8 @@
+{
+	'fastTrack' => {
+		'study' => '5624',
+		'database' => 'bacteria',
+		'analysis' => [
+				'rna-seq',
+				],
+}
