@@ -10,7 +10,6 @@ package Bio::HPS::FastTrack::Config::MappingHandler;
 use Moose;
 extends('Bio::HPS::FastTrack::Config::ConfigHandler');
 
-has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 
 sub _build_analysis_config_handler {
 
