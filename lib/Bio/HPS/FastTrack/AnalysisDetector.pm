@@ -46,9 +46,18 @@ sub _build_analysis_runners {
     push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( database => $self->database() ) );
   }
   if ( 'all' ~~ @{ $self->analysis() } ) {
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::MappingAnalysis->new( database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::AssemblyAndAnnotationAnalysis->new( database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis->new( database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new( database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( database => $self->database() ) );    
+  }
+  if ( scalar @{ $self->analysis } == 0 ) {
     push( @runners, Bio::HPS::FastTrack::PipelineRun::Analysis->new( database => $self->database() ) );
   }
 
+    
   return \@runners;
       
 }

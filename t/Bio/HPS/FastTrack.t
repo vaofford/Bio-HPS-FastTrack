@@ -13,7 +13,7 @@ BEGIN {
 ok ( my $hps_fast_track =  Bio::HPS::FastTrack->new( study => '2465', database => 'bacteria' ), 'Creating HPS::FastTrack object' );
 is ( $hps_fast_track->study(), '2465', 'Study id comparison');
 is ( $hps_fast_track->database(), 'bacteria', 'Database name comparison');
-is_deeply ( $hps_fast_track->analysis(), ['all'], 'Analysis types comparison');
+is_deeply ( $hps_fast_track->analysis(), [], 'Analysis types comparison');
 isa_ok ( $hps_fast_track->analysis_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Analysis', 'PipelineRun module hook' );
 
 ok ( my $hps_fast_track_bacteria_mapping =  Bio::HPS::FastTrack->new( study => '5462', database => 'bacteria', analysis => ['mapping'] ), 'Creating bacteria mapping HPS::FastTrack object' );
@@ -59,6 +59,18 @@ is_deeply ( $hps_fast_track_bacteria_mapping_assembly_annotation->analysis(), ['
 isa_ok ( $hps_fast_track_bacteria_mapping_assembly_annotation->analysis_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::MappingAnalysis', 'Config module hook' );
 isa_ok ( $hps_fast_track_bacteria_mapping_assembly_annotation->analysis_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::AssemblyAndAnnotationAnalysis', 'Config module hook' );
 
-$hps_fast_track_bacteria_mapping_assembly_annotation->run();
+ok ( my $hps_fast_track_bacteria_all =  Bio::HPS::FastTrack->new( study => '5462', database => 'bacteria', analysis => ['all'] ), 'Creating bacteria all analysis HPS::FastTrack object' );
+is ( $hps_fast_track_bacteria_all->study(), '5462', 'Study id comparison bacteria all');
+is ( $hps_fast_track_bacteria_all->database(), 'bacteria', 'Database name comparison bacteria all');
+is_deeply ( $hps_fast_track_bacteria_all->analysis(), ['all'], 'Analysis types comparison bacteria all');
+is (scalar @{$hps_fast_track_bacteria_all->analysis_runners()}, 6, 'All analysis will be run bacteria all');
+isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::MappingAnalysis', 'Config module hook' );
+isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::AssemblyAndAnnotationAnalysis', 'Config module hook' );
+isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis', 'Config module hook' );
+isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[3], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis', 'Config module hook' );
+isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis', 'Config module hook' );
+isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::TradisAnalysis', 'Config module hook' );
+
+$hps_fast_track_bacteria_all->run();
 
 done_testing();

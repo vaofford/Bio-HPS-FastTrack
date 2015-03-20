@@ -14,7 +14,7 @@ use Bio::HPS::FastTrack::AnalysisDetector;
 
 has 'study' => ( is => 'rw', isa => 'Str', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'analysis'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', default => sub { ['all'] });
+has 'analysis'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', default => sub { [] });
 has 'analysis_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_analysis_runners');
 has 'mode'   => ( is => 'rw', isa => 'Str', default => '' );
 
