@@ -71,4 +71,6 @@ isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[3], 'Bio::HPS::FastT
 isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis', 'PipelineRun module hook' );
 isa_ok ( $hps_fast_track_bacteria_all->analysis_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::TradisAnalysis', 'PipelineRun module hook' );
 
+ $hps_fast_track_bacteria_all->run();
+
 done_testing();

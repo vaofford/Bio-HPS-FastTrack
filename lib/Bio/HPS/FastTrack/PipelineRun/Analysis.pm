@@ -4,6 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::Analysis;
 
 =head1 SYNOPSIS
 
+my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::Analysis->new( database => 'virus')
 
 =cut
 

@@ -4,6 +4,14 @@ package Bio::HPS::FastTrack;
 
 =head1 SYNOPSIS
 
+my $hps_fast_track_bacteria_mapping_and_rna_seq =  Bio::HPS::FastTrack->new( study => '4562', database => 'bacteria', analysis => ['mapping','rna-seq'] );
+$hps_fast_track_bacteria_mapping_and_rna_seq->study();
+$hps_fast_track_bacteria_mapping_and_rna_seq->database();
+for my $pipeline_run( @{ hps_fast_track_bacteria_mapping_and_rna_seq->analysis_runners() } ) {
+  $pipeline_run->run();
+}
+
+
 
 =cut
 
@@ -19,12 +27,14 @@ has 'analysis_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder 
 has 'mode'   => ( is => 'rw', isa => 'Str', default => '' );
 
 
-
 sub run {
 
   my ($self) = @_;
-  use Data::Dumper;
-  print Dumper($self->analysis_runners());
+
+  for my $module(@{$self->analysis_runners()}) {
+    print($module->database(),"\n");
+
+  }
   
 
 }

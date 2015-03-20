@@ -4,6 +4,7 @@ package  Bio::HPS::FastTrack::AnalysisDetector;
 
 =head1 SYNOPSIS
 
+my $analysis_detector = Bio::HPS::FastTrack::AnalysisDetector->new( database => 'virus', analysis => ['all'])
 
 =cut
 

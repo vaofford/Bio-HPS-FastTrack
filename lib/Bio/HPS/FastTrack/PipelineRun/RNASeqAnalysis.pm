@@ -4,18 +4,13 @@ package Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis;
 
 =head1 SYNOPSIS
 
+my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( database => 'virus')
 
 =cut
 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
 
-sub _build_analysis_runner {
-
-  my ($self) = @_;
-  return {};
-
-}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
