@@ -27,6 +27,9 @@ sub _build_analysis_runners {
   my ($self) = @_;
 
   my @runners;
+  if ( scalar @{ $self->analysis } == 0 ) {
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Analysis->new( database => $self->database() ) );
+  }
   if ( 'mapping' ~~ @{ $self->analysis() } ) {
     push( @runners, Bio::HPS::FastTrack::PipelineRun::MappingAnalysis->new( database => $self->database() ) );
   }
@@ -53,9 +56,7 @@ sub _build_analysis_runners {
     push( @runners, Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new( database => $self->database() ) );
     push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( database => $self->database() ) );    
   }
-  if ( scalar @{ $self->analysis } == 0 ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::Analysis->new( database => $self->database() ) );
-  }
+
 
     
   return \@runners;
