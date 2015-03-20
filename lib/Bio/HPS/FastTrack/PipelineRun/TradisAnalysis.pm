@@ -11,6 +11,9 @@ my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
 
+sub run {
+
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
