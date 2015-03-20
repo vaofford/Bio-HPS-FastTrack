@@ -8,46 +8,49 @@ package  Bio::HPS::FastTrack::AnalysisDetector;
 =cut
 
 use Moose;
-use Bio::HPS::FastTrack::Config::ConfigHandler;
-use Bio::HPS::FastTrack::Config::MappingHandler;
-use Bio::HPS::FastTrack::Config::AssemblyAndAnnotationHandler;
-use Bio::HPS::FastTrack::Config::SNPCallingHandler;
-use Bio::HPS::FastTrack::Config::RNASeqHandler;
-use Bio::HPS::FastTrack::Config::PanGenomeHandler;
-use Bio::HPS::FastTrack::Config::TradisHandler;
+use Bio::HPS::FastTrack::PipelineRun::Analysis;
+use Bio::HPS::FastTrack::PipelineRun::MappingAnalysis;
+use Bio::HPS::FastTrack::PipelineRun::AssemblyAndAnnotationAnalysis;
+use Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis;
+use Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis;
+use Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis;
+use Bio::HPS::FastTrack::PipelineRun::TradisAnalysis;
 
 
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'analysis'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
-has 'analysis_config_handler'   => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config::ConfigHandler', lazy => 1, builder => '_build_analysis_config_handler');
+has 'analysis_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_analysis_runners');
 
 
-sub _build_analysis_config_handler {
+sub _build_analysis_runners {
 
   my ($self) = @_;
 
+  my @runners;
   if ( 'mapping' ~~ @{ $self->analysis() } ) {
-    return Bio::HPS::FastTrack::Config::MappingHandler->new( database => $self->database() );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::MappingAnalysis->new( database => $self->database() ) );
   }
   if ( 'assembly' ~~ @{ $self->analysis() } || 'annotation' ~~ @{ $self->analysis() } ) {
-    return Bio::HPS::FastTrack::Config::AssemblyAndAnnotationHandler->new( database => $self->database() );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::AssemblyAndAnnotationAnalysis->new( database => $self->database() ) );
   }
   if ( 'snp-calling' ~~ @{ $self->analysis() } ) {
-    return Bio::HPS::FastTrack::Config::SNPCallingHandler->new( database => $self->database() );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis->new( database => $self->database() ) );
   }
   if ( 'rna-seq' ~~ @{ $self->analysis() } ) {
-    return Bio::HPS::FastTrack::Config::RNASeqHandler->new( database => $self->database() );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( database => $self->database() ) );
   }
   if ( 'pan-genome' ~~ @{ $self->analysis() } ) {
-    return Bio::HPS::FastTrack::Config::PanGenomeHandler->new( database => $self->database() );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new( database => $self->database() ) );
   }
   if ( 'tradis' ~~ @{ $self->analysis() } ) {
-    return Bio::HPS::FastTrack::Config::TradisHandler->new( database => $self->database() );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( database => $self->database() ) );
   }
   if ( 'all' ~~ @{ $self->analysis() } ) {
-    return Bio::HPS::FastTrack::Config::ConfigHandler->new( database => $self->database() );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Analysis->new( database => $self->database() ) );
   }
 
+  return \@runners;
+      
 }
 
 

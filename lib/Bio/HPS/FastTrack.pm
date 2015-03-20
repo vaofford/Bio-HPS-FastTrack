@@ -15,7 +15,7 @@ use Bio::HPS::FastTrack::AnalysisDetector;
 has 'study' => ( is => 'rw', isa => 'Str', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'analysis'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', default => sub { ['all'] });
-has 'analysis_config_handler'   => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config::ConfigHandler', lazy => 1, builder => '_build_analysis_config_handler');
+has 'analysis_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_analysis_runners');
 has 'mode'   => ( is => 'rw', isa => 'Str', default => '' );
 
 
@@ -23,15 +23,16 @@ has 'mode'   => ( is => 'rw', isa => 'Str', default => '' );
 sub run {
 
   my ($self) = @_;
-  print($self->analysis_config_handler(), "\n");
+  use Data::Dumper;
+  print Dumper($self->analysis_runners());
   
 
 }
 
 
-sub _build_analysis_config_handler {
+sub _build_analysis_runners {
   my ($self) = @_;
-  return Bio::HPS::FastTrack::AnalysisDetector->new( analysis => $self->analysis(), database=> $self->database() )->analysis_config_handler();
+  return Bio::HPS::FastTrack::AnalysisDetector->new( analysis => $self->analysis(), database=> $self->database() )->analysis_runners();
 }
 
 
