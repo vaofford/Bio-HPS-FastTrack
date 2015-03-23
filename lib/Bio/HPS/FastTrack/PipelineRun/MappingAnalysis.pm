@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::MappingAnalysis;
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::MappingAnalysis->new( database => 'virus');
+my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::MappingAnalysis->new( database => 'pathogen_prok_track_test');
 
 =cut
 
