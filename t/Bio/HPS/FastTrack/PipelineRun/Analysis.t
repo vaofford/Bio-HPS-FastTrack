@@ -13,6 +13,8 @@ BEGIN {
 
 ok( my $analysis_runner = Bio::HPS::FastTrack::PipelineRun::Analysis->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Analysis runner object');
 isa_ok ( $analysis_runner, 'Bio::HPS::FastTrack::PipelineRun::Analysis', 'PipelineRun module hook' );
+is ( $analysis_runner->allowed_processed_flags()->{1}, 'import', 'Import flag');
+is ( $analysis_runner->allowed_processed_flags()->{2}, 'qc', 'QC flag');
 ok ( my $study = $analysis_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');
 ok ( $study->lanes(), 'Collecting lanes');

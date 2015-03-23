@@ -13,6 +13,20 @@ extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
 
 sub run {
 
+  my ($self) = @_;
+  $self->_is_mapping_done();
+
+  
+}
+
+sub _is_mapping_done {
+
+  my ($self) = @_;
+  my $study_lanes = $self->study_metadata()->lanes();
+  for my $lane(@$study_lanes) {
+
+  }
+
 }
 
 no Moose;

@@ -19,5 +19,13 @@ is($lane->study_name, 'Comparative_RNA_seq_analysis_of_three_bacterial_species',
 is($lane->sample_id, 79, 'Sample ID');
 is($lane->processed, 15, 'Processed flag');
 is($lane->lane_name, '7138_6#17', 'Lane name');
+is($lane->pipeline_stage, '', 'Pipeline Stage');
 
+my $lane2 = $study->lanes()->[1];
+is($lane2->pipeline_stage(), '', 'Pipeline Stage');
+my $lane3 = $study->lanes()->[2];
+is($lane3->pipeline_stage, '', 'Pipeline Stage');
+my $lane4 = $study->lanes()->[3];
+is($lane4->pipeline_stage, '', 'Pipeline Stage');
+print Dumper($study);
 done_testing();

@@ -17,4 +17,5 @@ is( $hps_lane->study_name(), 'Comparative_RNA_seq_analysis_of_three_bacterial_sp
 is( $hps_lane->sample_id(), 19, 'Sample ID');
 is( $hps_lane->processed(), 1, 'Processed flag');
 is( $hps_lane->lane_name(), '8405_4#6', 'Lane name');
+is( $hps_lane->pipeline_stage(), 'qc', 'Pipeline stage');
 done_testing();

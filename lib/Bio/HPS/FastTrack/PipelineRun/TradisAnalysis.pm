@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::TradisAnalysis;
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( database => 'virus')
+my $tradis_analysis_runner = Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( database => 'virus')
 
 =cut
 
@@ -13,6 +13,14 @@ extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
 
 sub run {
 
+  my ($self) = @_;
+  $self->_is_tradis_analysis_done();
+  
+}
+
+sub _is_tradis_analysis_done {
+
+  
 }
 
 no Moose;

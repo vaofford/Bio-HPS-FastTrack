@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis;
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis->new( database => 'virus')
+my $snp_calling_analysis_runner = Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis->new( database => 'virus')
 
 =cut
 
@@ -12,6 +12,13 @@ use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
 
 sub run {
+
+  my ($self) = @_;
+  $self->_is_snp_calling_done();
+  
+}
+
+sub _is_snp_calling_done {
 
 }
 

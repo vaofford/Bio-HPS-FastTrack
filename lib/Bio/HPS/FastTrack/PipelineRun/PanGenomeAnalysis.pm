@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis;
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new( database => 'virus')
+my $pan_genome_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new( database => 'virus')
 
 =cut
 
@@ -12,6 +12,13 @@ use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
 
 sub run {
+
+  my ($self) = @_;
+  $self->_is_pan_genome_analysis_done();
+  
+}
+
+sub _is_pan_genome_analysis_done {
 
 }
 
