@@ -1,10 +1,10 @@
-package Bio::HPS::FastTrack::PipelineRun::Analysis;
+package Bio::HPS::FastTrack::PipelineRun::PipelineRun;
 
 # ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::Analysis->new( database => 'pathogen_prok_track_test')
+my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( database => 'pathogen_prok_track_test')
 
 =cut
 
@@ -14,7 +14,7 @@ use Bio::HPS::FastTrack::Study;
 has 'allowed_processed_flags' => ( is => 'rw', isa => 'HashRef', default => sub { {} });
 has 'study' => ( is => 'rw', isa => 'Int', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'analysis_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_analysis_runner' );
+has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Study', lazy => 1, builder => '_build_study_metadata') ;
 
 sub BUILD {
@@ -24,7 +24,7 @@ sub BUILD {
 
 }
 
-sub _build_analysis_runner {
+sub _build_pipeline_runner {
 
   my ($self) = @_;
   return {};
