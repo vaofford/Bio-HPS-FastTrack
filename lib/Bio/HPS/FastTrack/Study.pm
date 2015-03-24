@@ -20,14 +20,13 @@ has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3346' ); #Test 
 #has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3347' ); #Test port at the moment, when in production change to '3347'
 has 'user' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'pathpipe_ro' );
 has 'lanes' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_list_of_lanes_for_study');
-
+has 'study_name' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA' );
 
 sub _build_list_of_lanes_for_study {
 
   my ($self) = @_;
   $self->_get_lane_data_from_database();
 }
-
 
 sub _get_lane_data_from_database {
 
@@ -54,9 +53,9 @@ END_OF_SQL
   }
   $sth->finish();
   $dbh->disconnect();
+  $self->study_name($lanes[0]->study_name());
   return \@lanes;
 }
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

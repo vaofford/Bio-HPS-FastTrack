@@ -9,7 +9,7 @@ BEGIN {
   }
 
 ok( my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Mapping runner object');
-isa_ok ( $mapping_runner, 'Bio::HPS::FastTrack::PipelineRun::Mapping', 'PipelineRun module hook' );
+isa_ok ( $mapping_runner, 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
 ok ( my $study = $mapping_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');
 ok ( $study->lanes(), 'Collecting lanes');
@@ -27,5 +27,13 @@ is( $study->lanes()->[1]->sample_id(), 76, 'Sample ID not mapped');
 is( $study->lanes()->[1]->processed(), 1035, 'Processed flag not mapped');
 is( $study->lanes()->[1]->lane_name(), '7153_1#20', 'Lane name not mapped');
 is( $study->lanes()->[1]->pipeline_stage(), 'not mapped', 'Pipeline stage not mapped');
+
+ok ( my $config = $mapping_runner->config_data(), 'Creating config object');
+is ( $config->config_root(), '/nfs/pathnfs05/conf', 'Root path of config files');
+ok ( $config->config_root('t/data/conf'), 'Creating config object');
+is ( $config->config_root(), 't/data/conf', 'Root path of config files');
+is ( $config->path_to_high_level_config(), '/Users/js21/work/Bio-HPS-FastTrack/t/data/conf/pathogen_prok_track_test/pathogen_prok_track_test_mapping_pipeline.conf', 'Mapping test configuration directory');
+
+print Dumper($mapping_runner);
 
 done_testing();
