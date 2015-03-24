@@ -8,11 +8,11 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::HPS::FastTrack::PipelineRun::Analysis');
+    use_ok('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
   }
 
-ok( my $analysis_runner = Bio::HPS::FastTrack::PipelineRun::Analysis->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Analysis runner object');
-isa_ok ( $analysis_runner, 'Bio::HPS::FastTrack::PipelineRun::Analysis', 'PipelineRun module hook' );
+ok( my $analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Pipeline runner object');
+isa_ok ( $analysis_runner, 'Bio::HPS::FastTrack::PipelineRun::Pipeline' );
 is ( $analysis_runner->allowed_processed_flags()->{1}, 'import', 'Import flag');
 is ( $analysis_runner->allowed_processed_flags()->{2}, 'qc', 'QC flag');
 ok ( my $study = $analysis_runner->study_metadata(), 'Creating study object');
