@@ -26,7 +26,12 @@ sub _is_mapping_done {
   my ($self) = @_;
   my $study_lanes = $self->study_metadata()->lanes();
   for my $lane(@$study_lanes) {
-
+    if( ($lane->processed() & $self->allowed_processed_flags()->{$self->flag_to_check}) == 0 ) {
+      $lane->pipeline_stage($self->flag_to_check);
+    }
+    else {
+      $lane->pipeline_stage('not mapped');
+    }
   }
 
 }
