@@ -24,4 +24,5 @@ is( $study->lanes()->[0]->sample_id(), 79, 'Sample ID');
 is( $study->lanes()->[0]->processed(), 15, 'Processed flag');
 is( $study->lanes()->[0]->lane_name(), '7138_6#17', 'Lane name');
 
+print Dumper($analysis_runner);
 done_testing();

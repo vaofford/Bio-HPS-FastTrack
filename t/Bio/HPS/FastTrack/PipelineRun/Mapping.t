@@ -7,12 +7,12 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis');
+    use_ok('Bio::HPS::FastTrack::PipelineRun::Mapping');
   }
 
-ok( my $snp_calling_analysis_runner = Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a SNPCallingAnalysis runner object');
-isa_ok ( $snp_calling_analysis_runner, 'Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis', 'PipelineRun module hook' );
-ok ( my $study = $snp_calling_analysis_runner->study_metadata(), 'Creating study object');
+ok( my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Mapping runner object');
+isa_ok ( $mapping_runner, 'Bio::HPS::FastTrack::PipelineRun::Mapping', 'PipelineRun module hook' );
+ok ( my $study = $mapping_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');
 ok ( $study->lanes(), 'Collecting lanes');
 isa_ok ($study->lanes()->[0], 'Bio::HPS::FastTrack::Lane');
@@ -20,4 +20,5 @@ is( $study->lanes()->[0]->study_name(), 'Comparative_RNA_seq_analysis_of_three_b
 is( $study->lanes()->[0]->sample_id(), 79, 'Sample ID');
 is( $study->lanes()->[0]->processed(), 15, 'Processed flag');
 is( $study->lanes()->[0]->lane_name(), '7138_6#17', 'Lane name');
+
 done_testing();
