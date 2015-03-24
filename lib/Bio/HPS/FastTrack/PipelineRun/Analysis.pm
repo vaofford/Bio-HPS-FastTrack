@@ -11,10 +11,18 @@ my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::Analysis->new( d
 use Moose;
 use Bio::HPS::FastTrack::Study;
 
+has 'allowed_processed_flags' => ( is => 'rw', isa => 'HashRef', default => sub { {} });
 has 'study' => ( is => 'rw', isa => 'Int', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'analysis_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_analysis_runner' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Study', lazy => 1, builder => '_build_study_metadata') ;
+
+sub BUILD {
+
+  my ($self) = @_;
+  $self->allowed_processed_flags($self->_allowed_processed_flags());
+
+}
 
 sub _build_analysis_runner {
 
@@ -32,18 +40,27 @@ sub _build_study_metadata {
 
 }
 
+sub _allowed_processed_flags {
 
+  my ($self) = @_;
 
-
-sub run {
-
-
+  my %flags = (import => 1,
+	       qc => 2,
+	       mapped => 4,
+	       stored => 8,
+	       deleted => 16,
+	       swapped => 32,
+	       altered_fastq => 64,
+	       improved => 128,
+	       snp_called => 256,
+	       rna_seq_expression => 512,
+	       assembled  => 1024,
+	       annotated  => 2048,
+	      );
+ 
+  return \%flags;
 }
 
-sub _has_completed {
-
-
-}
 
 
 no Moose;

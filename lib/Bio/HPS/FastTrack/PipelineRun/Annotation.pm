@@ -4,12 +4,14 @@ package Bio::HPS::FastTrack::PipelineRun::Annotation;
 
 =head1 SYNOPSIS
 
-my $annotation_analysis_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new( database => 'virus')
+my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new( database => 'virus')
 
 =cut
 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+
+has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'annotated');
 
 sub run {
 

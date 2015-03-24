@@ -4,7 +4,7 @@ package Bio::HPS::FastTrack::PipelineRun::SNPCalling;
 
 =head1 SYNOPSIS
 
-my $snp_calling_analysis_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new( database => 'virus')
+my $snp_calling_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new( database => 'virus')
 
 =cut
 

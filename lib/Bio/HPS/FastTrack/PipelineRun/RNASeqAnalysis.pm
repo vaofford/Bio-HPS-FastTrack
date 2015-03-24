@@ -4,12 +4,14 @@ package Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis;
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( database => 'virus')
+my $rna_seq_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( database => 'virus')
 
 =cut
 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+
+has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'rna_seq_expression');
 
 sub run {
 

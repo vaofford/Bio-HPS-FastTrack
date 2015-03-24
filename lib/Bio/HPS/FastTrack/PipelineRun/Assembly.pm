@@ -11,6 +11,8 @@ my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new( database 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
 
+has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'assembled');
+
 sub run {
 
   my ($self) = @_;
