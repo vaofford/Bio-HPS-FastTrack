@@ -11,30 +11,11 @@ my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new( database =>
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'mapped');
+has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'mapped');
+has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not mapped');
 
-sub run {
 
-  my ($self) = @_;
-  $self->_is_mapping_done();
 
-  
-}
-
-sub _is_mapping_done {
-
-  my ($self) = @_;
-  my $study_lanes = $self->study_metadata()->lanes();
-  for my $lane(@$study_lanes) {
-    if( ($lane->processed() & $self->allowed_processed_flags()->{$self->flag_to_check}) == 0 ) {
-      $lane->pipeline_stage($self->flag_to_check);
-    }
-    else {
-      $lane->pipeline_stage('not mapped');
-    }
-  }
-
-}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

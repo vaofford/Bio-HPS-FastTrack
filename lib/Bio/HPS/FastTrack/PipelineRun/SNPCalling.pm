@@ -11,18 +11,8 @@ my $snp_calling_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new( data
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'snp_called');
-
-sub run {
-
-  my ($self) = @_;
-  $self->_is_snp_calling_done();
-  
-}
-
-sub _is_snp_calling_done {
-
-}
+has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'snp_called');
+has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not snp_called');
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

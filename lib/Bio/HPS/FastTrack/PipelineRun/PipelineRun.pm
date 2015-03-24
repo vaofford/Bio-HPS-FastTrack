@@ -16,11 +16,36 @@ has 'study' => ( is => 'rw', isa => 'Int', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Study', lazy => 1, builder => '_build_study_metadata') ;
+has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
+has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
 
 sub BUILD {
 
   my ($self) = @_;
   $self->allowed_processed_flags($self->_allowed_processed_flags());
+
+}
+
+sub run {
+
+  my ($self) = @_;
+  $self->_is_pipeline_stage_done();
+
+  
+}
+
+sub _is_pipeline_stage_done {
+
+  my ($self) = @_;
+  my $study_lanes = $self->study_metadata()->lanes();
+  for my $lane(@$study_lanes) {
+    if( ($lane->processed() & $self->allowed_processed_flags()->{$self->stage_done}) == 0 ) {
+      $lane->pipeline_stage($self->stage_not_done);
+    }
+    else {
+      $lane->pipeline_stage($self->stage_done);
+    }
+  }
 
 }
 

@@ -11,18 +11,9 @@ my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new( database 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'assembled');
+has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'assembled');
+has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not assembled');
 
-sub run {
-
-  my ($self) = @_;
-  $self->_is_assembly_done();
-}
-
-sub _is_assembly_done {
-
-
-}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
