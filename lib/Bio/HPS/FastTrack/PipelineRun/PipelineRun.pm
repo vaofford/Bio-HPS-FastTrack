@@ -94,7 +94,7 @@ sub _build_config_data {
 						database => $self->database(),
 						db_alias => $self->db_alias(),
 						add_to_config_path => $self->add_to_config_path()
-					       );
+					       );  
   return $config;
 
 }
