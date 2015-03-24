@@ -9,7 +9,7 @@ my $pan_genome_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PanGenomeAnal
 =cut
 
 use Moose;
-extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
 sub run {
 

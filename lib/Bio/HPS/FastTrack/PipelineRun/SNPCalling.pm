@@ -9,7 +9,7 @@ my $snp_calling_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new( data
 =cut
 
 use Moose;
-extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
 has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'snp_called');
 

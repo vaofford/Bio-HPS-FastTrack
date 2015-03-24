@@ -9,7 +9,7 @@ my $rna_seq_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( data
 =cut
 
 use Moose;
-extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
 has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'rna_seq_expression');
 

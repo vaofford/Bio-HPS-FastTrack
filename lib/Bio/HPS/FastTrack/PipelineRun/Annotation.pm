@@ -9,7 +9,7 @@ my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new( datab
 =cut
 
 use Moose;
-extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
 has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'annotated');
 

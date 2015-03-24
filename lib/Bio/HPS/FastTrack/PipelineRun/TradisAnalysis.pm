@@ -9,7 +9,7 @@ my $tradis_analysis_runner = Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->n
 =cut
 
 use Moose;
-extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
 sub run {
 
