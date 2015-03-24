@@ -1,15 +1,17 @@
-package Bio::HPS::FastTrack::PipelineRun::MappingAnalysis;
+package Bio::HPS::FastTrack::PipelineRun::Mapping;
 
 # ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::MappingAnalysis->new( database => 'pathogen_prok_track_test');
+my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new( database => 'pathogen_prok_track_test');
 
 =cut
 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+
+has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'mapped');
 
 sub run {
 

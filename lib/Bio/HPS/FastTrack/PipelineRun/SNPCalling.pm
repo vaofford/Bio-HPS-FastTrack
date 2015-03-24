@@ -1,15 +1,17 @@
-package Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis;
+package Bio::HPS::FastTrack::PipelineRun::SNPCalling;
 
 # ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
 
 =head1 SYNOPSIS
 
-my $snp_calling_analysis_runner = Bio::HPS::FastTrack::PipelineRun::SNPCallingAnalysis->new( database => 'virus')
+my $snp_calling_analysis_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new( database => 'virus')
 
 =cut
 
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::Analysis');
+
+has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'snp_called');
 
 sub run {
 
