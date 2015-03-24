@@ -29,13 +29,13 @@ system('touch empty_file');
 				['empty_file', 'empty_file'],
 				['/Users/js21/hps_fast_track_config/config_2465'],
 			       ],
-			       ' -s 5624 -d bacteria -a rna-seq' => 
+			       ' -s 5624 -d bacteria -p rna-seq' => 
 			       [
-				['/Users/js21/hps_fast_track_config/config_5624','t/data/config_5624']
+				['empty_file','empty_file']
 			       ],
-			       ' -s 4652 -d bacteria -a mapping -a rna-seq' => 
+			       ' -s 4652 -d bacteria -p mapping -p rna-seq' => 
 			       [
-				['/Users/js21/hps_fast_track_config/config_4652','t/data/config_4652']
+				['empty_file','empty_file']
 			       ],
 );
 

@@ -30,10 +30,10 @@ sub run {
 
   my ($self) = @_;
 
-  for my $module(@{$self->pipeline_runners()}) {
-    print($module->database(),"\n");
-
-  }
+  #for my $module(@{$self->pipeline_runners()}) {
+  #  print($module->database(),"\n");
+  #
+  #}
   
 
 }
