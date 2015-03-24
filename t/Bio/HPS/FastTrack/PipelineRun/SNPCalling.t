@@ -10,7 +10,7 @@ BEGIN {
   }
 
 ok( my $snp_calling_runner = Bio::HPS::FastTrack::PipelineRun::SNPCalling->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a SNPCalling runner object');
-isa_ok ( $snp_calling_runner, 'Bio::HPS::FastTrack::PipelineRun::SNPCalling', 'PipelineRun module hook' );
+isa_ok ( $snp_calling_runner, 'Bio::HPS::FastTrack::PipelineRun::SNPCalling' );
 ok ( my $study = $snp_calling_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');
 ok ( $study->lanes(), 'Collecting lanes');
@@ -28,5 +28,13 @@ is( $study->lanes()->[1]->sample_id(), 76, 'Sample ID snp-called2');
 is( $study->lanes()->[1]->processed(), 1035, 'Processed flag snp-called2');
 is( $study->lanes()->[1]->lane_name(), '7153_1#20', 'Lane name snp-called2');
 is( $study->lanes()->[1]->pipeline_stage(), 'not snp_called', 'Pipeline stage snp-called2');
+
+ok ( my $config = $snp_calling_runner->config_data(), 'Creating config object');
+is ( $config->config_root(), '/nfs/pathnfs05/conf', 'Root path of config files');
+ok ( $config->config_root('t/data/conf'), 'Creating config object');
+is ( $config->config_root(), 't/data/conf', 'Root path of config files');
+is ( $config->path_to_high_level_config(), '/Users/js21/work/Bio-HPS-FastTrack/t/data/conf/pathogen_prok_track_test/pathogen_prok_track_test_snps_pipeline.conf', 'Annotation test configuration directory');
+
+print Dumper($snp_calling_runner);
 
 done_testing();

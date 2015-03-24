@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use Moose;
 use Data::Dumper;
+
 BEGIN { unshift( @INC, './lib' ) }
 BEGIN { unshift( @INC, './t/lib' ) }
 BEGIN {
@@ -9,7 +10,7 @@ BEGIN {
   }
 
 ok( my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Assembly runner object');
-isa_ok ( $assembly_runner, 'Bio::HPS::FastTrack::PipelineRun::Assembly', 'PipelineRun module hook' );
+isa_ok ( $assembly_runner, 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
 ok ( my $study = $assembly_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');
 ok ( $study->lanes(), 'Collecting lanes');
