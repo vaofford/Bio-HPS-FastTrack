@@ -11,6 +11,7 @@ my $hps_study = Bio::HPS::FastTrack::Study->new( id => '123', database => 'patho
 use Moose;
 use DBI;
 use Bio::HPS::FastTrack::Lane;
+use Bio::HPS::FastTrack::Exception;
 
 has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
@@ -34,7 +35,7 @@ sub _get_lane_data_from_database {
   my @lanes;
   my $study_id = $self->study();
   my $sql = <<"END_OF_SQL";
-select la.`name`, s.`sample_id`, la.`processed`, p.`hierarchy_name`, p.`ssid` from latest_lane as la 
+select la.`name`, s.`sample_id`, la.`processed`, p.`hierarchy_name`, p.`ssid`, la.`storage_path` from latest_lane as la 
 inner join latest_library as li on (li.`library_id` = la.`library_id`)
 inner join latest_sample as s on (s.`sample_id` = li.`sample_id`)
 inner join latest_project as p on (p.`project_id` = s.`project_id`)
@@ -44,11 +45,20 @@ order by la.`name`;
 END_OF_SQL
 
   my $dsn = 'DBI:mysql:database=' . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
-  my $dbh = DBI->connect($dsn, $self->user());
+  my $dbh = DBI->connect($dsn, $self->user()) ||
+    Bio::HPS::FastTrack::Exception::DatabaseConnection->throw( error => "Error: Could not connect to database '" . $self->database() . "' on host '" . $self->hostname . "' on port '" . $self->port . "'\n" );
+  
   my $sth = $dbh->prepare($sql);
   $sth->execute();
+
   while (my $ref = $sth->fetchrow_hashref()) {
-    my $lane = Bio::HPS::FastTrack::Lane->new(lane_name => $ref->{'name'}, sample_id => $ref->{'sample_id'}, processed => $ref->{'processed'}, study_name => $ref->{'hierarchy_name'});
+    my $lane = Bio::HPS::FastTrack::Lane->new(
+					      lane_name   => $ref->{'name'},
+					      sample_id   => $ref->{'sample_id'},
+					      processed   => $ref->{'processed'},
+					      study_name  => $ref->{'hierarchy_name'},
+					      storage_path => defined $ref->{'storage_path'} && $ref->{'storage_path'} ne '' ? $ref->{'storage_path'} : 'no storage path retrieved'
+					     );
     push(@lanes, $lane);
   }
   $sth->finish();

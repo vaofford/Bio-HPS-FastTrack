@@ -11,6 +11,7 @@ my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new
 use Moose;
 use Bio::HPS::FastTrack::Study;
 use Bio::HPS::FastTrack::Config;
+use Bio::HPS::FastTrack::Exception;
 
 has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
 has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
@@ -81,9 +82,9 @@ sub _build_pipeline_runner {
 sub _build_study_metadata {
 
   my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::Study->new(study => $self->study(), database => $self->database() );
+  my $study = Bio::HPS::FastTrack::Study->new( study => $self->study(), database => $self->database() );
+  $study->lanes();
   return $study;
-
 }
 
 sub _build_config_data {

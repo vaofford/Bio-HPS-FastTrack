@@ -12,6 +12,7 @@ use Moose;
 use File::Slurp;
 use File::Spec;
 use Cwd qw/abs_path/;
+use Bio::HPS::FastTrack::Exception;
 
 has 'study_name' => ( is => 'rw', isa => 'Str', required => 1 );
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
@@ -28,11 +29,15 @@ sub _build_path_to_high_level_config {
 
   my $path;
   if( $self->db_alias eq 'no alias' ) {
-    $path = abs_path(File::Spec->catfile($self->config_root(), $self->database(), $high_level_conf_filename));
+    $path = File::Spec->catfile($self->config_root(), $self->database(), $high_level_conf_filename) ||
+      Bio::HPS::Exception::FullPathNotPossible->throw( error => "Error: Could not establish the full path with config root '" . $self->config_root() . "'\n" );
+
     return $path;
   }
   else {
-    $path = abs_path(File::Spec->catfile($self->config_root(), $self->db_alias(), $high_level_conf_filename));
+    $path = File::Spec->catfile($self->config_root(), $self->db_alias(), $high_level_conf_filename) ||
+      Bio::HPS::Exception::FullPathNotPossible->throw( error => "Error: Could not establish the full path with config root '" . $self->config_root() . "'\n" );
+
     return $path;
   }
 }
@@ -40,17 +45,18 @@ sub _build_path_to_high_level_config {
 sub _build_path_to_low_level_config {
 
   my ($self) = @_;
-  
-  my @lines = read_file( $self->path_to_high_level_config ) ;
+
+  my @lines = read_file( $self->path_to_high_level_config );
+
   my @split;
   for my $line(@lines) {
     chomp($line);
     my $study_name = $self->study_name;
-    if ($line =~ m/.*_$study_name.*/) {
+    if ($line =~ m/$study_name/) {
       @split = split(' ', $line);
     }
   }
-  return abs_path($split[1]);
+  return $split[1];
 }
 
 no Moose;

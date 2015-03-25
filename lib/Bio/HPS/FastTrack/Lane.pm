@@ -9,11 +9,13 @@ my $hps_lane = Bio::HPS::FastTrack::Lane->new(lane_name => $name, sample_id => $
 =cut
 
 use Moose;
+use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
-has 'lane_name'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'sample_id'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'processed'   => ( is => 'rw', isa => 'Int', required => 1 );
-has 'study_name'   => ( is => 'rw', isa => 'Str', required => 1 );
+has 'lane_name'      => ( is => 'rw', isa => 'Str', required => 1 );
+has 'sample_id'      => ( is => 'rw', isa => 'Str', required => 1 );
+has 'processed'      => ( is => 'rw', isa => 'Int', required => 1 );
+has 'study_name'     => ( is => 'rw', isa => 'Str', required => 1 );
+has 'storage_path'   => ( is => 'rw', isa => 'LaneStoragePath', required => 1 );
 has 'pipeline_stage' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'no flag' );
 
 
