@@ -33,9 +33,9 @@ ok ( my $config = $snp_calling_runner->config_data(), 'Creating config object');
 is ( $config->config_root(), '/nfs/pathnfs05/conf', 'Root path of config files');
 ok ( $config->config_root('t/data/conf'), 'Creating config object');
 is ( $config->config_root(), 't/data/conf', 'Root path of config files');
-is ( $config->path_to_high_level_config(), '/Users/js21/work/Bio-HPS-FastTrack/t/data/conf/pathogen_prok_track_test/pathogen_prok_track_test_snps_pipeline.conf', 'Annotation test configuration directory');
+is ( $config->path_to_high_level_config(), 't/data/conf/pathogen_prok_track_test/pathogen_prok_track_test_snps_pipeline.conf', 'Annotation test configuration directory');
 is ( $config->path_to_low_level_config(),
-     '/Users/js21/work/Bio-HPS-FastTrack/t/data/conf/pathogen_prok_track_test/snps/snps_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes_Streptococcus_pyogenes_BC2_HKU16_v0.1_bwa.conf',
+     't/data/conf/pathogen_prok_track_test/snps/snps_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes_Streptococcus_pyogenes_BC2_HKU16_v0.1_bwa.conf',
      'Low level config'
    );
 

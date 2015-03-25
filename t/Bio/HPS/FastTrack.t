@@ -1,27 +1,48 @@
 #!/usr/bin/env perl
 use Moose;
+use Data::Dumper;
 
 BEGIN { unshift( @INC, './lib' ) }
 BEGIN { unshift( @INC, './t/lib' ) }
-with 'TestHelper';
-
 BEGIN {
-    use Test::Most;
-    use_ok('Bio::HPS::FastTrack');
+  use Test::Most;
+  use Test::Exception;
+  use_ok('Bio::HPS::FastTrack');
 }
 
-ok ( my $hps_fast_track =  Bio::HPS::FastTrack->new( study => '2465', database => 'bacteria' ), 'Creating HPS::FastTrack object' );
-is ( $hps_fast_track->study(), '2465', 'Study id comparison');
-is ( $hps_fast_track->database(), 'bacteria', 'Database name comparison');
-is_deeply ( $hps_fast_track->pipeline(), [], 'Pipeline types comparison');
-isa_ok ( $hps_fast_track->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::PipelineRun' );
+# ok ( my $hps_fast_track =  Bio::HPS::FastTrack->new( study => '2465', database => 'bacteria' ), 'Creating HPS::FastTrack object' );
+# is ( $hps_fast_track->study(), '2465', 'Study id comparison');
+# is ( $hps_fast_track->database(), 'bacteria', 'Database name comparison');
+# is_deeply ( $hps_fast_track->pipeline(), [], 'Pipeline types comparison');
+# isa_ok ( $hps_fast_track->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::PipelineRun' );
+ok ( my $hps_fast_track_non_existant_database = Bio::HPS::FastTrack->new( study => '2027', database => 'clown_database' ), 'Creating HPS::FastTrack object' );
+throws_ok { $hps_fast_track_non_existant_database->run() } qr/Error: Could not connect to database/ , 'Non existent database exception thrown' ;
 
-ok ( my $hps_fast_track_bacteria_mapping =  Bio::HPS::FastTrack->new( study => '5462', database => 'bacteria', pipeline => ['mapping'] ), 'Creating bacteria mapping HPS::FastTrack object' );
-is ( $hps_fast_track_bacteria_mapping->study(), '5462', 'Study id comparison bacteria mapping');
-is ( $hps_fast_track_bacteria_mapping->database(), 'bacteria', 'Database name comparison bacteria mapping');
+ok ( my $hps_fast_track_bacteria_mapping =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'] ), 'Creating bacteria mapping HPS::FastTrack object' );
+is ( $hps_fast_track_bacteria_mapping->study(), '2027', 'Study id comparison bacteria mapping');
+is ( $hps_fast_track_bacteria_mapping->database(), 'pathogen_prok_track_test', 'Database name comparison bacteria mapping');
 is_deeply ( $hps_fast_track_bacteria_mapping->pipeline(), ['mapping'], 'Pipeline types comparison bacteria mapping');
 isa_ok ( $hps_fast_track_bacteria_mapping->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
 
+throws_ok { $hps_fast_track_bacteria_mapping->run() } qr/sysopen: No such file or directory at/ , 'Non existent config root exception thrown' ;
+#is ( $hps_fast_track_bacteria_mapping->pipeline_runners()->[0]->config_data()->config_root(), '/nfs/pathnfs05/conf', 'The default conf path' );
+#is ( $hps_fast_track_bacteria_mapping->pipeline_runners()->[0]->config_data()->path_to_high_level_config(), '/nfs/pathnfs05/conf/pathogen_prok_track_test/pathogen_prok_track_test_mapping_pipeline.conf', 'High level config' );
+#throws_ok { $hps_fast_track_bacteria_mapping->pipeline_runners()->[0]->config_data()->path_to_low_level_config() } qr/sysopen: No such file or directory at/ , 'Non existent config root exception thrown' ;
+
+
+ok ( my $hps_fast_track_bacteria_mapping2 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'] ), 'Creating bacteria mapping HPS::FastTrack object' );
+is ( $hps_fast_track_bacteria_mapping2->study(), '2027', 'Study id comparison bacteria mapping');
+is ( $hps_fast_track_bacteria_mapping2->database(), 'pathogen_prok_track_test', 'Database name comparison bacteria mapping');
+is_deeply ( $hps_fast_track_bacteria_mapping2->pipeline(), ['mapping'], 'Pipeline types comparison bacteria mapping');
+isa_ok ( $hps_fast_track_bacteria_mapping2->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
+ok ( $hps_fast_track_bacteria_mapping2->pipeline_runners()->[0]->config_data()->config_root('t/data/conf'), 'Setting the test conf root path' );
+is ( $hps_fast_track_bacteria_mapping2->pipeline_runners()->[0]->config_data()->config_root(), 't/data/conf', 'Proper path now' );
+$hps_fast_track_bacteria_mapping2->run();
+is ( $hps_fast_track_bacteria_mapping2->pipeline_runners()->[0]->config_data()->path_to_high_level_config(), 't/data/conf/pathogen_prok_track_test/pathogen_prok_track_test_mapping_pipeline.conf', 'High level config' );
+is ( $hps_fast_track_bacteria_mapping2->pipeline_runners()->[0]->config_data()->path_to_low_level_config(),
+     't/data/conf/pathogen_prok_track_test/mapping/mapping_Comparative_RNA_seq_analysis_of_three_bacterial_species_Streptococcus_pyogenes_Streptococcus_pyogenes_BC2_HKU16_v0.1_bwa.conf', 'Low level config' );
+
+   
 ok ( my $hps_fast_track_bacteria_assembly_annotation =  Bio::HPS::FastTrack->new( study => '4562', database => 'bacteria', pipeline => ['assembly','annotation'] ), 'Creating bacteria assembly and annotation HPS::FastTrack object' );
 is ( $hps_fast_track_bacteria_assembly_annotation->study(), '4562', 'Study id comparison assembly and annotation');
 is ( $hps_fast_track_bacteria_assembly_annotation->database(), 'bacteria', 'Database name comparison assembly and annotation');

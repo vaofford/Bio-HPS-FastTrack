@@ -24,7 +24,8 @@ is($lane->study_name, 'Comparative_RNA_seq_analysis_of_three_bacterial_species',
 is($lane->sample_id, 79, 'Sample ID');
 is($lane->processed, 15, 'Processed flag');
 is($lane->lane_name, '7138_6#17', 'Lane name');
+is($lane->storage_path, 'no storage path retrieved', 'Storage path');
 is($lane->pipeline_stage, 'no flag', 'Pipeline Stage');
 
-print Dumper($study);
+#print Dumper($study);
 done_testing();
