@@ -10,7 +10,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::PipelineRun::TradisAnalysis');
   }
 
-ok( my $tradis_analysis_runner = Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a TradisAnalysis runner object');
+ok( my $tradis_analysis_runner = Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a TradisAnalysis runner object');
 isa_ok ( $tradis_analysis_runner, 'Bio::HPS::FastTrack::PipelineRun::TradisAnalysis', 'PipelineRun module hook' );
 ok ( my $study = $tradis_analysis_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');

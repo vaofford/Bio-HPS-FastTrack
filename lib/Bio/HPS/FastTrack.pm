@@ -11,36 +11,42 @@ for my $pipeline_run( @{ hps_fast_track_bacteria_mapping_and_rna_seq->pipeline_r
   $pipeline_run->run();
 }
 
-
-
 =cut
 
 use Moose;
 use File::Temp qw/ tempfile tempdir /;
 use File::Path qw(make_path remove_tree);
 use Bio::HPS::FastTrack::SetPipeline;
+use Bio::HPS::FastTrack::Exception;
+use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
 has 'study' => ( is => 'rw', isa => 'Int', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', default => sub { [] });
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
-has 'mode'   => ( is => 'rw', isa => 'Str', default => '' );
+has 'mode'   => ( is => 'rw', isa => 'RunMode', required => 1 );
 
 sub run {
 
   my ($self) = @_;
 
-  #for my $module(@{$self->pipeline_runners()}) {
-  #  print($module->database(),"\n");
-  #
-  #}
-  
+  for my $pipeline_runner(@{$self->pipeline_runners()}) {
+    $pipeline_runner->study_metadata();
+    $pipeline_runner->run();
+    $pipeline_runner->config_data();
+    $pipeline_runner->config_data->path_to_high_level_config();
+    $pipeline_runner->config_data->path_to_low_level_config();
+
+    #use Data::Dumper;
+    #print Dumper($pipeline_runner);
+  }
+
 
 }
 
 sub _build_pipeline_runners {
   my ($self) = @_;
-  return Bio::HPS::FastTrack::SetPipeline->new( study => $self->study(), pipeline => $self->pipeline(), database=> $self->database() )->pipeline_runners();
+  return Bio::HPS::FastTrack::SetPipeline->new( study => $self->study(), pipeline => $self->pipeline(), database=> $self->database(), mode => $self->mode )->pipeline_runners();
 }
 
 no Moose;

@@ -1,0 +1,18 @@
+package Bio::HPS::FastTrack::Exception;
+
+#ABSTRACT: Exceptions for the High Priority Samples FastTrack system
+
+=head1 SYNOPSIS
+
+Exceptions for the High Priority Samples FastTrack system
+
+=cut
+
+
+use Exception::Class (
+		      Bio::HPS::Exception::FileDoesNotExist              => { description => 'Cannot find file' },
+		      Bio::HPS::Exception::FullPathNotPossible           => { description => 'Cannot create absolute path for a file' },
+		      Bio::HPS::FastTrack::Exception::DatabaseConnection => { description => 'Database, host or port parameters are wrong' },  
+		     );
+
+1;

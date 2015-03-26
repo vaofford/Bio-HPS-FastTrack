@@ -21,6 +21,7 @@ use Bio::HPS::FastTrack::PipelineRun::TradisAnalysis;
 has 'study'   => ( is => 'rw', isa => 'Int', required => 1 );
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline'   => ( is => 'rw',  isa => 'Maybe[ArrayRef]', required => 1);
+has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline_runners'   => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_pipeline_runners');
 
 
@@ -30,43 +31,49 @@ sub _build_pipeline_runners {
 
   my @runners;
   if ( scalar @{ $self->pipeline() } == 0 ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::PipelineRun->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::PipelineRun->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'mapping' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'assembly' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'annotation' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'snp-calling' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'rna-seq' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'pan-genome' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'tradis' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new(study => $self->study(), database => $self->database() ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
   }
   if ( 'all' ~~ @{ $self->pipeline() } ) {
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => $self->study(), database => $self->database() ) );
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => $self->study(), database => $self->database() ) );
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => $self->study(), database => $self->database() ) );
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => $self->study(), database => $self->database() ) );
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => $self->study(), database => $self->database() ) );
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new(study => $self->study(), database => $self->database() ) );
-    push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new(study => $self->study(), database => $self->database() ) );    
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Mapping->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Assembly->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::Annotation->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::SNPCalling->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );
+    push( @runners, Bio::HPS::FastTrack::PipelineRun::TradisAnalysis->new(study => $self->study(), database => $self->database(), mode => $self->mode ) );    
   }
-
-
     
   return \@runners;
       
+}
+
+
+sub _set_pipeline_order {
+
+  my ($self) = @_;
+  
+
 }
 
 

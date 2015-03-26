@@ -24,16 +24,16 @@ system('touch empty_file');
 
 %scripts_and_expected_files = (
 
-			       ' -s 2465 -d bacteria' => 
+			       ' -s 2027 -d pathogen_prok_track_test -m test' => 
 			       [
 				['empty_file', 'empty_file'],
 				['/Users/js21/hps_fast_track_config/config_2465'],
 			       ],
-			       ' -s 5624 -d bacteria -p rna-seq' => 
+			       ' -s 2027 -d pathogen_prok_track_test -p rna-seq -m test' => 
 			       [
 				['empty_file','empty_file']
 			       ],
-			       ' -s 4652 -d bacteria -p mapping -p rna-seq' => 
+			       ' -s 2027 -d pathogen_prok_track_test -p mapping -p rna-seq -m test' => 
 			       [
 				['empty_file','empty_file']
 			       ],

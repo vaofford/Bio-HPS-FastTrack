@@ -11,18 +11,9 @@ my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new( datab
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'flag_to_check'   => ( is => 'ro', isa => 'Str', default => 'annotated');
-
-sub run {
-
-  my ($self) = @_;
-  $self->_is_annotation_done();
-}
-
-sub _is_annotation_done {
-
-
-}
+has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'annotated');
+has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not annotated');
+has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'annotate_assembly');
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
