@@ -10,6 +10,7 @@ package Bio::HPS::FastTrack::CommandLine::HPSFastTrack;
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Bio::HPS::FastTrack;
+use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
@@ -18,7 +19,7 @@ has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'study' => ( is => 'rw', isa => 'Str');
 has 'database'   => ( is => 'rw', isa => 'Str');
 has 'pipeline'   => ( is => 'rw', isa => 'Maybe[ArrayRef]', default => sub { ['all'] } );
-has 'mode'   => ( is => 'rw', isa => 'Str', default => '' );
+has 'mode'   => ( is => 'rw', isa => 'RunMode', default => 'prod' );
 
 sub BUILD {
 

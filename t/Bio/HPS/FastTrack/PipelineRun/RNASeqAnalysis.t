@@ -9,7 +9,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis');
   }
 
-ok( my $rna_seq_analysis_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a RNASeqAnalysis runner object');
+ok( my $rna_seq_analysis_runner = Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a RNASeqAnalysis runner object');
 isa_ok ( $rna_seq_analysis_runner, 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
 ok ( my $study = $rna_seq_analysis_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');

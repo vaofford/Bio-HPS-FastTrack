@@ -10,15 +10,26 @@ BEGIN {
   use_ok('Bio::HPS::FastTrack');
 }
 
+ok ( my $hps_fast_track_run_mode1 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'prod' ), 'Creating mapping HPS::FastTrack object' );
+is ( $hps_fast_track_run_mode1->study(), '2027', 'Study id comparison mapping');
+is ( $hps_fast_track_run_mode1->mode(), 'prod', 'Run mode');
+
+ok ( my $hps_fast_track_run_mode2 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'test' ), 'Creating mapping HPS::FastTrack object' );
+is ( $hps_fast_track_run_mode2->study(), '2027', 'Study id comparison mapping');
+is ( $hps_fast_track_run_mode2->mode(), 'test', 'Run mode');
+
+throws_ok { my $hps_fast_track_run_mode3 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'blah' ) } qr/Invalid run mode -/, 'Invalid run mode';
+
+
 # ok ( my $hps_fast_track =  Bio::HPS::FastTrack->new( study => '2465', database => 'bacteria' ), 'Creating HPS::FastTrack object' );
 # is ( $hps_fast_track->study(), '2465', 'Study id comparison');
 # is ( $hps_fast_track->database(), 'bacteria', 'Database name comparison');
 # is_deeply ( $hps_fast_track->pipeline(), [], 'Pipeline types comparison');
 # isa_ok ( $hps_fast_track->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::PipelineRun' );
-ok ( my $hps_fast_track_non_existant_database = Bio::HPS::FastTrack->new( study => '2027', database => 'clown_database' ), 'Creating HPS::FastTrack object' );
-throws_ok { $hps_fast_track_non_existant_database->run() } qr/Error: Could not connect to database/ , 'Non existent database exception thrown' ;
+ok ( my $hps_fast_track_non_existant_database = Bio::HPS::FastTrack->new( study => '2027', database => 'clown_database', mode => 'prod' ), 'Creating HPS::FastTrack object' );
+throws_ok { $hps_fast_track_non_existant_database->run() } qr/Could not connect to database/ , 'Non existent database exception thrown' ;
 
-ok ( my $hps_fast_track_mapping =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'] ), 'Creating mapping HPS::FastTrack object' );
+ok ( my $hps_fast_track_mapping =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'prod' ), 'Creating mapping HPS::FastTrack object' );
 is ( $hps_fast_track_mapping->study(), '2027', 'Study id comparison mapping');
 is ( $hps_fast_track_mapping->database(), 'pathogen_prok_track_test', 'Database name comparison mapping');
 is_deeply ( $hps_fast_track_mapping->pipeline(), ['mapping'], 'Pipeline types comparison mapping');
@@ -27,7 +38,7 @@ throws_ok { $hps_fast_track_mapping->run() } qr/sysopen: No such file or directo
 
 
 
-ok ( my $hps_fast_track_mapping2 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'] ), 'Creating mapping HPS::FastTrack object' );
+ok ( my $hps_fast_track_mapping2 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'prod' ), 'Creating mapping HPS::FastTrack object' );
 is ( $hps_fast_track_mapping2->study(), '2027', 'Study id comparison mapping');
 is ( $hps_fast_track_mapping2->database(), 'pathogen_prok_track_test', 'Database name comparison mapping');
 is_deeply ( $hps_fast_track_mapping2->pipeline(), ['mapping'], 'Pipeline types comparison mapping');
@@ -42,7 +53,7 @@ is ( $hps_fast_track_mapping2->pipeline_runners()->[0]->config_data()->path_to_l
 
 
 
-ok ( my $hps_fast_track_assembly_annotation =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['assembly','annotation'] ), 'Creating assembly and annotation HPS::FastTrack object' );
+ok ( my $hps_fast_track_assembly_annotation =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['assembly','annotation'], mode => 'prod' ), 'Creating assembly and annotation HPS::FastTrack object' );
 is ( $hps_fast_track_assembly_annotation->study(), '2027', 'Study id comparison assembly and annotation');
 is ( $hps_fast_track_assembly_annotation->database(), 'pathogen_prok_track_test', 'Database name comparison assembly and annotation');
 is_deeply ( $hps_fast_track_assembly_annotation->pipeline(), ['assembly','annotation'], 'Pipeline types comparison assembly and annotation');
@@ -63,7 +74,7 @@ is ( $hps_fast_track_assembly_annotation->pipeline_runners()->[1]->config_data()
 
 
 
-ok ( my $hps_fast_track_snp_calling =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['snp-calling'] ), 'Creating snp-calling HPS::FastTrack object' );
+ok ( my $hps_fast_track_snp_calling =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['snp-calling'], mode => 'prod' ), 'Creating snp-calling HPS::FastTrack object' );
 is ( $hps_fast_track_snp_calling->study(), '2027', 'Study id comparison snp-calling');
 is ( $hps_fast_track_snp_calling->database(), 'pathogen_prok_track_test', 'Database name comparison snp-calling');
 is_deeply ( $hps_fast_track_snp_calling->pipeline(), ['snp-calling'], 'Pipeline types comparison snp-calling');
@@ -78,7 +89,7 @@ is (  $hps_fast_track_snp_calling->pipeline_runners()->[0]->config_data()->path_
 
 
 
-ok ( my $hps_fast_track_rna_seq =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['rna-seq'] ), 'Creating rna-seq HPS::FastTrack object' );
+ok ( my $hps_fast_track_rna_seq =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['rna-seq'], mode => 'prod' ), 'Creating rna-seq HPS::FastTrack object' );
 is ( $hps_fast_track_rna_seq->study(), '2027', 'Study id comparison rna-seq');
 is ( $hps_fast_track_rna_seq->database(), 'pathogen_prok_track_test', 'Database name comparison rna-seq');
 is_deeply ( $hps_fast_track_rna_seq->pipeline(), ['rna-seq'], 'Pipeline types comparison rna-seq');
@@ -93,19 +104,19 @@ is ( $hps_fast_track_rna_seq->pipeline_runners()->[0]->config_data()->path_to_lo
 
 
 
-ok ( my $hps_fast_track_pan_genome =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['pan-genome'] ), 'Creating pan-genome HPS::FastTrack object' );
+ok ( my $hps_fast_track_pan_genome =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['pan-genome'], mode => 'prod' ), 'Creating pan-genome HPS::FastTrack object' );
 is ( $hps_fast_track_pan_genome->study(), '2027', 'Study id comparison pan-genome');
 is ( $hps_fast_track_pan_genome->database(), 'pathogen_prok_track_test', 'Database name comparison pan-genome');
 is_deeply ( $hps_fast_track_pan_genome->pipeline(), ['pan-genome'], 'Pipeline types comparison pan-genome');
 isa_ok ( $hps_fast_track_pan_genome->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis' );
 
-ok ( my $hps_fast_track_tradis =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['tradis'] ), 'Creating tradis HPS::FastTrack object' );
+ok ( my $hps_fast_track_tradis =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['tradis'], mode => 'prod' ), 'Creating tradis HPS::FastTrack object' );
 is ( $hps_fast_track_tradis->study(), '2027', 'Study id comparison tradis');
 is ( $hps_fast_track_tradis->database(), 'pathogen_prok_track_test', 'Database name comparison tradis');
 is_deeply ( $hps_fast_track_tradis->pipeline(), ['tradis'], 'Pipeline types comparison tradis');
 isa_ok ( $hps_fast_track_tradis->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::TradisAnalysis' );
 
-ok ( my $hps_fast_track_mapping_assembly_annotation =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping','assembly','annotation'] ), 'Creating mapping, assembly and annotation HPS::FastTrack object' );
+ok ( my $hps_fast_track_mapping_assembly_annotation =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping','assembly','annotation'], mode => 'prod' ), 'Creating mapping, assembly and annotation HPS::FastTrack object' );
 is ( $hps_fast_track_mapping_assembly_annotation->study(), '2027', 'Study id comparison mapping, assembly and annotation');
 is ( $hps_fast_track_mapping_assembly_annotation->database(), 'pathogen_prok_track_test', 'Database name comparison mapping, assembly and annotation');
 is_deeply ( $hps_fast_track_mapping_assembly_annotation->pipeline(), ['mapping','assembly','annotation'], 'Pipeline types comparison mapping, assembly and annotation');
@@ -113,7 +124,7 @@ isa_ok ( $hps_fast_track_mapping_assembly_annotation->pipeline_runners()->[0], '
 isa_ok ( $hps_fast_track_mapping_assembly_annotation->pipeline_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
 isa_ok ( $hps_fast_track_mapping_assembly_annotation->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
 
-ok ( my $hps_fast_track_all =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['all'] ), 'Creating all pipelines HPS::FastTrack object' );
+ok ( my $hps_fast_track_all =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['all'], mode => 'prod' ), 'Creating all pipelines HPS::FastTrack object' );
 is ( $hps_fast_track_all->study(), '2027', 'Study id comparison all');
 is ( $hps_fast_track_all->database(), 'pathogen_prok_track_test', 'Database name comparison all');
 is_deeply ( $hps_fast_track_all->pipeline(), ['all'], 'Pipeline types comparison all');
@@ -125,5 +136,6 @@ isa_ok ( $hps_fast_track_all->pipeline_runners()->[3], 'Bio::HPS::FastTrack::Pip
 isa_ok ( $hps_fast_track_all->pipeline_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
 isa_ok ( $hps_fast_track_all->pipeline_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::PanGenomeAnalysis' );
 isa_ok ( $hps_fast_track_all->pipeline_runners()->[6], 'Bio::HPS::FastTrack::PipelineRun::TradisAnalysis' );
+
 
 done_testing();

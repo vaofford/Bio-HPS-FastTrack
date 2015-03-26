@@ -9,7 +9,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::PipelineRun::Assembly');
   }
 
-ok( my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Assembly runner object');
+ok( my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Assembly runner object');
 isa_ok ( $assembly_runner, 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
 ok ( my $study = $assembly_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');

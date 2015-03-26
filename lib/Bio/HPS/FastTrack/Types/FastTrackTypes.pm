@@ -10,6 +10,19 @@ package Bio::HPS::FastTrack::Types::FastTrackTypes;
 use Moose::Util::TypeConstraints;
 
 
+subtype 'RunMode',
+  as 'Str',
+  where { validate_run_mode($_) },
+  message { "Invalid run mode - '$_' -" };
+
+sub validate_run_mode {
+
+  my ($mode) = @_;
+  return 1 if ($mode eq 'prod' or $mode eq 'test');
+  return 0;
+}
+
+
 subtype 'LaneStoragePath',
   as 'Str',
   where { validate_storage_path($_) },

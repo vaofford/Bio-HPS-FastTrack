@@ -9,7 +9,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::PipelineRun::Mapping');
   }
 
-ok( my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Mapping runner object');
+ok( my $mapping_runner = Bio::HPS::FastTrack::PipelineRun::Mapping->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Mapping runner object');
 isa_ok ( $mapping_runner, 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
 ok ( $mapping_runner->study_metadata(), 'Creating study object');
 isa_ok ( $mapping_runner->study_metadata(), 'Bio::HPS::FastTrack::Study');

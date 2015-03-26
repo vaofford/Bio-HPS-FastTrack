@@ -9,7 +9,7 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::PipelineRun::Annotation');
   }
 
-ok( my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new( study =>  2027, database => 'pathogen_prok_track_test' ), 'Creating a Annotation runner object');
+ok( my $annotation_runner = Bio::HPS::FastTrack::PipelineRun::Annotation->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Annotation runner object');
 isa_ok ( $annotation_runner, 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
 ok ( my $study = $annotation_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::Study');

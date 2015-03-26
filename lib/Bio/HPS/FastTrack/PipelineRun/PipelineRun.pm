@@ -20,6 +20,7 @@ has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'NA');
 has 'allowed_processed_flags' => ( is => 'rw', isa => 'HashRef', default => sub { {} });
 has 'study' => ( is => 'rw', isa => 'Int', required => 1);
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
+has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
 has 'db_alias' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_db_alias' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Study', lazy => 1, builder => '_build_study_metadata') ;
@@ -82,7 +83,7 @@ sub _build_pipeline_runner {
 sub _build_study_metadata {
 
   my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::Study->new( study => $self->study(), database => $self->database() );
+  my $study = Bio::HPS::FastTrack::Study->new( study => $self->study(), database => $self->database(), mode => $self->mode  );
   $study->lanes();
   return $study;
 }
@@ -94,7 +95,8 @@ sub _build_config_data {
 						study_name => $self->study_metadata()->study_name(),
 						database => $self->database(),
 						db_alias => $self->db_alias(),
-						add_to_config_path => $self->add_to_config_path()
+						add_to_config_path => $self->add_to_config_path(),
+						mode => $self->mode()
 					       );  
   return $config;
 

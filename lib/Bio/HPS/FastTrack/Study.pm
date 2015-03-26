@@ -10,11 +10,14 @@ my $hps_study = Bio::HPS::FastTrack::Study->new( id => '123', database => 'patho
 
 use Moose;
 use DBI;
+use DBD::Mock;
 use Bio::HPS::FastTrack::Lane;
 use Bio::HPS::FastTrack::Exception;
+use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
 has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
+has 'mode'   => ( is => 'rw', isa => 'RunMode', required => 1 );
 has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'mcs11' ); #Test database at the moment, when in production change to 'mcs17'
 has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3346' ); #Test port at the moment, when in production change to '3347'
 #has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'mcs17' ); #Test database at the moment, when in production change to 'mcs17'
@@ -32,6 +35,7 @@ sub _build_list_of_lanes_for_study {
 sub _get_lane_data_from_database {
 
   my ($self) = @_;
+  
   my @lanes;
   my $study_id = $self->study();
   my $sql = <<"END_OF_SQL";
@@ -44,7 +48,8 @@ group by la.`name`
 order by la.`name`;
 END_OF_SQL
 
-  my $dsn = 'DBI:mysql:database=' . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
+  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:Mock:';
+  my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
   my $dbh = DBI->connect($dsn, $self->user()) ||
     Bio::HPS::FastTrack::Exception::DatabaseConnection->throw( error => "Error: Could not connect to database '" . $self->database() . "' on host '" . $self->hostname . "' on port '" . $self->port . "'\n" );
   
