@@ -10,7 +10,7 @@ my $hps_study = Bio::HPS::FastTrack::Study->new( id => '123', database => 'patho
 
 use Moose;
 use DBI;
-use DBD::Mock;
+use File::Slurp;
 use Bio::HPS::FastTrack::Lane;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
@@ -39,7 +39,7 @@ sub _get_lane_data_from_database {
   my @lanes;
   my $study_id = $self->study();
   my $sql = <<"END_OF_SQL";
-select la.`name`, s.`sample_id`, la.`processed`, p.`hierarchy_name`, p.`ssid`, la.`storage_path` from latest_lane as la 
+select la.`name`, s.`sample_id`, la.`processed`, p.`hierarchy_name`, la.`storage_path` from latest_lane as la 
 inner join latest_library as li on (li.`library_id` = la.`library_id`)
 inner join latest_sample as s on (s.`sample_id` = li.`sample_id`)
 inner join latest_project as p on (p.`project_id` = s.`project_id`)
@@ -48,7 +48,10 @@ group by la.`name`
 order by la.`name`;
 END_OF_SQL
 
-  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:Mock:';
+  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:SQLite:dbname=';
+
+  my $create_and_populate_test_db = 't/data/database/create_test_db_and_populate.sql';
+  _use_sqllite_test_db() if $self->mode eq 'test';
   my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
   my $dbh = DBI->connect($dsn, $self->user()) ||
     Bio::HPS::FastTrack::Exception::DatabaseConnection->throw( error => "Error: Could not connect to database '" . $self->database() . "' on host '" . $self->hostname . "' on port '" . $self->port . "'\n" );
@@ -56,20 +59,44 @@ END_OF_SQL
   my $sth = $dbh->prepare($sql);
   $sth->execute();
 
-  while (my $ref = $sth->fetchrow_hashref()) {
+  while (my $ref = $sth->fetchrow_arrayref()) {
     my $lane = Bio::HPS::FastTrack::Lane->new(
-					      lane_name   => $ref->{'name'},
-					      sample_id   => $ref->{'sample_id'},
-					      processed   => $ref->{'processed'},
-					      study_name  => $ref->{'hierarchy_name'},
-					      storage_path => defined $ref->{'storage_path'} && $ref->{'storage_path'} ne '' ? $ref->{'storage_path'} : 'no storage path retrieved'
+					      lane_name	  => $ref->[0],
+					      sample_id	  => $ref->[1],
+					      processed	  => $ref->[2],
+					      study_name  => $ref->[3],
+					      storage_path => defined $ref->[4] && $ref->[4] ne '' ? $ref->[4] : 'no storage path retrieved'
 					     );
     push(@lanes, $lane);
   }
   $sth->finish();
+  _destroy_test_db() if $self->mode eq 'test';
   $dbh->disconnect();
   $self->study_name($lanes[0]->study_name());
   return \@lanes;
+}
+
+sub _use_sqllite_test_db {
+
+  my ($file) = @_;
+  my $dsn = 'DBI:SQLite:dbname=t/data/database/test.db';
+  my $dbh = DBI->connect($dsn);
+  my @sql = read_file($file);
+  for my $stmt(@sql) {
+    $dbh->do($stmt);
+  }
+  $dbh->disconnect();
+}
+
+sub _destroy_test_db {
+
+  my $dsn = 'DBI:SQLite:dbname=t/data/database/test.db';
+  my $dbh = DBI->connect($dsn);
+  my @sql = read_file('t/data/database/destroy_test_db.sql');
+  for my $drop(@sql) {
+    $dbh->do($drop);
+  }
+  $dbh->disconnect();
 }
 
 no Moose;

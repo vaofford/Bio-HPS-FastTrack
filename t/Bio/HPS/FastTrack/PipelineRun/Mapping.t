@@ -37,6 +37,6 @@ is ( $mapping_runner->config_data->path_to_low_level_config(),
      'Low level config'
    );
 
-#print Dumper($mapping_runner);
+print Dumper($mapping_runner);
 
 done_testing();
