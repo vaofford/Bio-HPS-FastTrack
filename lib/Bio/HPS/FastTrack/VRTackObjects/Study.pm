@@ -1,141 +1,97 @@
-package Bio::HPS::FastTrack::PipelineRun::PipelineRun;
+package Bio::HPS::FastTrack::Study;
 
 # ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
 
 =head1 SYNOPSIS
 
-my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( database => 'pathogen_prok_track_test')
+  my $hps_study = Bio::HPS::FastTrack::Study->new( id => '123', database => 'pathogen_prok_track_test')
 
 =cut
 
 use Moose;
-use Bio::HPS::FastTrack::Study;
-use Bio::HPS::FastTrack::Config;
+use DBI;
+use File::Slurp;
+use Bio::HPS::FastTrack::Lane;
 use Bio::HPS::FastTrack::Exception;
+use Bio::HPS::FastTrack::Types::FastTrackTypes;
 
-has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
-has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
-has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'NA');
+has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
+has 'database' => ( is => 'rw', isa => 'Str', required => 1 );
+has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1 );
+has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'mcs11' ); #Test database at the moment, when in production change to 'mcs17'
+has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3346' ); #Test port at the moment, when in production change to '3347'
+#has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'mcs17' ); #Test database at the moment, when in production change to 'mcs17'
+#has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3347' ); #Test port at the moment, when in production change to '3347'
+has 'user' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'pathpipe_ro' );
+has 'lanes' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_list_of_lanes_for_study');
+has 'study_name' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA' );
 
-has 'allowed_processed_flags' => ( is => 'rw', isa => 'HashRef', default => sub { {} });
-has 'study' => ( is => 'rw', isa => 'Int', lazy => 1, default => '' );
-has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
-has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
-has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
-has 'db_alias' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_db_alias' );
-has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Study', lazy => 1, builder => '_build_study_metadata') ;
-has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Lane', lazy => 1, builder => '_build_lane_metadata') ;
-has 'config_data' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config', lazy => 1, builder => '_build_config_data') ;
-
-sub BUILD {
-
+sub _build_list_of_lanes_for_study {
   my ($self) = @_;
-  $self->allowed_processed_flags($self->_allowed_processed_flags());
-
+  $self->_get_lane_data_from_database();
 }
 
-sub _allowed_processed_flags {
-
+sub _get_lane_data_from_database {
   my ($self) = @_;
+  my @lanes;
+  my $study_id = $self->study();
+  my $sql = <<"END_OF_SQL";
+select la.`name`, s.`sample_id`, la.`processed`, p.`hierarchy_name`, la.`storage_path` from latest_lane as la
+inner join latest_library as li on (li.`library_id` = la.`library_id`)
+inner join latest_sample as s on (s.`sample_id` = li.`sample_id`)
+inner join latest_project as p on (p.`project_id` = s.`project_id`)
+where p.`ssid` = $study_id
+group by la.`name`
+order by la.`name`;
+END_OF_SQL
 
-  my %flags = (import => 1,
-	       qc => 2,
-	       mapped => 4,
-	       stored => 8,
-	       deleted => 16,
-	       swapped => 32,
-	       altered_fastq => 64,
-	       improved => 128,
-	       snp_called => 256,
-	       rna_seq_expression => 512,
-	       assembled  => 1024,
-	       annotated  => 2048,
-	      );
- 
-  return \%flags;
-}
-
-sub _build_db_alias {
-
-  my ($self) = @_;
-  my %database_aliases = (
-				'pathogen_virus_track'    => 'viruses',
-				'pathogen_prok_track'     => 'prokaryotes',
-				'pathogen_euk_track'      => 'eukaryotes',
-				'pathogen_helminth_track' => 'helminths',
-				'pathogen_rnd_track'      => 'rnd'
-			       );
+  my $dbi_driver = $self->mode() eq 'prod' ? 'DBI:mysql:database=' : 'DBI:SQLite:dbname=';
+  my $create_test_db = 't/data/database/create_test_db_and_populate.sql';
+  my $destroy_test_db = 't/data/database/create_test_db_and_populate.sql';
+  _use_sqllite_test_db($create_test_db) if $self->mode eq 'test';
   
-  if ( $database_aliases{$self->database()} ) {
-    return( $database_aliases{$self->database()} );
+  my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
+  my $dbh = DBI->connect($dsn, $self->user()) ||
+    Bio::HPS::FastTrack::Exception::DatabaseConnection->throw( error => "Error: Could not connect to database '" . $self->database() . "' on host '" . $self->hostname . "' on port '" . $self->port . "'\n" );
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  while (my $ref = $sth->fetchrow_arrayref()) {
+    my $lane = Bio::HPS::FastTrack::Lane->new(
+					      lane_name => $ref->[0],
+					      sample_id => $ref->[1],
+					      processed => $ref->[2],
+					      study_name => $ref->[3],
+					      storage_path => defined $ref->[4] && $ref->[4] ne '' ? $ref->[4] : 'no storage path retrieved'
+					     );
+    push(@lanes, $lane);
   }
-  else {
-    return( 'no alias' );
-  }
-}
-
-sub _build_pipeline_runner {
-
-  my ($self) = @_;
-  return {};
-
-}
-
-sub _build_study_metadata {
-
-  my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::Study->new( study => $self->study(), database => $self->database(), mode => $self->mode  );
-  $study->lanes();
-  return $study;
-}
-
-sub _build_lane_metadata {
-
-  my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::Lane->new(  lane_name => $self->lane(), database => $self->database(), mode => $self->mode  );
-  $study->lanes();
-  return $study;
-}
-
-sub _build_config_data {
-
-  my ($self) = @_;
-  my $config = Bio::HPS::FastTrack::Config->new(
-						study_name => $self->study_metadata()->study_name(),
-						database => $self->database(),
-						db_alias => $self->db_alias(),
-						add_to_config_path => $self->add_to_config_path(),
-						mode => $self->mode()
-					       );  
-  return $config;
-
-}
-
-sub run {
-
-  my ($self) = @_;
-  $self->_is_pipeline_stage_done();
+  $sth->finish();
   
+  _use_sqllite_test_db($destroy_test_db) if $self->mode eq 'test';
+  $dbh->disconnect();
+  $self->study_name($lanes[0]->study_name());
+  return \@lanes;
 }
 
-sub _is_pipeline_stage_done {
-
-  my ($self) = @_;
-  my $study_lanes = $self->study_metadata()->lanes();
-  for my $lane(@$study_lanes) {
-    if( ($lane->processed() & $self->allowed_processed_flags()->{$self->stage_done}) == 0 ) {
-      $lane->pipeline_stage($self->stage_not_done);
-    }
-    else {
-      $lane->pipeline_stage($self->stage_done);
-    }
+sub _use_sqllite_test_db {
+  my ($file) = @_;
+  my $dsn = 'DBI:SQLite:dbname=t/data/database/test.db';
+  my $dbh = DBI->connect($dsn);
+  my @sql = read_file($file);
+  for my $stmt (@sql) {
+    $dbh->do($stmt);
   }
-
+  $dbh->disconnect();
 }
-
-
-
+sub _destroy_test_db {
+  my $dsn = 'DBI:SQLite:dbname=t/data/database/test.db';
+  my $dbh = DBI->connect($dsn);
+  my @sql = read_file('t/data/database/destroy_test_db.sql');
+  for my $drop (@sql) {
+    $dbh->do($drop);
+  }
+  $dbh->disconnect();
+}
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
