@@ -16,7 +16,6 @@ has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not mapped');
 has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'mapping');
 
 
-
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;

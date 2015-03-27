@@ -30,4 +30,8 @@ is ( $config->config_root(), '/nfs/pathnfs05/conf', 'Root path of config files')
 
 ok( my $pipeline_runner2 = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( study =>  2027, database => 'pathogen_prok_track', mode => 'prod' ), 'Creating a Pipeline runner object');
 is( $pipeline_runner2->db_alias, 'prokaryotes', 'Non standard database' );
+
+ok( my $pipeline_runner3 = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( lane => '7138_6#17' , database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Pipeline runner object');
+
+print Dumper($pipeline_runner3);
 done_testing();

@@ -37,6 +37,8 @@ is ( $mapping_runner->config_data->path_to_low_level_config(),
      'Low level config'
    );
 
-print Dumper($mapping_runner);
+ok( my $mapping_runner3 = Bio::HPS::FastTrack::PipelineRun::Mapping->new( lane => '7153_1#20' , database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Mapping runner object');
+
+print Dumper($mapping_runner3);
 
 done_testing();

@@ -1,29 +1,25 @@
-package Bio::HPS::FastTrack::Study;
+package Bio::HPS::FastTrack::VRTrackObject::Study;
 
 # ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
 
 =head1 SYNOPSIS
 
-  my $hps_study = Bio::HPS::FastTrack::Study->new( id => '123', database => 'pathogen_prok_track_test')
+  my $hps_study = Bio::HPS::FastTrack::VRTrackObject::Study->new( id => '123', database => 'pathogen_prok_track_test')
 
 =cut
 
 use Moose;
 use DBI;
 use File::Slurp;
-use Bio::HPS::FastTrack::Lane;
+use Bio::HPS::FastTrack::VRTrackObject::Lane;
+use VRTrack::Study;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
+extends('Bio::HPS::FastTrack::VRTrackObject::VRTrack');
 
 has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
-has 'database' => ( is => 'rw', isa => 'Str', required => 1 );
-has 'mode' => ( is => 'rw', isa => 'RunMode', required => 1 );
-has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'mcs11' ); #Test database at the moment, when in production change to 'mcs17'
-has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3346' ); #Test port at the moment, when in production change to '3347'
-#has 'hostname' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'mcs17' ); #Test database at the moment, when in production change to 'mcs17'
-#has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3347' ); #Test port at the moment, when in production change to '3347'
-has 'user' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'pathpipe_ro' );
-has 'lanes' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_list_of_lanes_for_study');
+#has 'lanes' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_list_of_lanes_for_study');
+has 'vrtrack_study' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_vrtrack_study_object');
 has 'study_name' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA' );
 
 sub _build_list_of_lanes_for_study {
@@ -31,7 +27,24 @@ sub _build_list_of_lanes_for_study {
   $self->_get_lane_data_from_database();
 }
 
+sub _build_vrtrack_study_object {
+
+  my ($self) = @_;
+  my $study_obj = VRTrack::Study->new( $self->vrtrack(), $self->study);
+  return $study_obj;
+
+}
+
 sub _get_lane_data_from_database {
+
+  my ($self) = @_;
+  $self->vrtrack();
+  
+
+
+}
+
+sub _get_lane_data_from_database_old {
   my ($self) = @_;
   my @lanes;
   my $study_id = $self->study();
@@ -52,17 +65,21 @@ END_OF_SQL
   
   my $dsn = $dbi_driver . $self->database() . ';host=' . $self->hostname() . ';port=' . $self->port();
   my $dbh = DBI->connect($dsn, $self->user()) ||
-    Bio::HPS::FastTrack::Exception::DatabaseConnection->throw( error => "Error: Could not connect to database '" . $self->database() . "' on host '" . $self->hostname . "' on port '" . $self->port . "'\n" );
+    Bio::HPS::FastTrack::Exception::DatabaseConnection->throw(
+							      error => "Error: Could not connect to database '" .
+							      $self->database() . "' on host '" .
+							      $self->hostname . "' on port '" . $self->port . "'\n"
+							     );
   my $sth = $dbh->prepare($sql);
   $sth->execute();
   while (my $ref = $sth->fetchrow_arrayref()) {
-    my $lane = Bio::HPS::FastTrack::Lane->new(
-					      lane_name => $ref->[0],
-					      sample_id => $ref->[1],
-					      processed => $ref->[2],
-					      study_name => $ref->[3],
-					      storage_path => defined $ref->[4] && $ref->[4] ne '' ? $ref->[4] : 'no storage path retrieved'
-					     );
+    my $lane = Bio::HPS::FastTrack::VRTrackObject::Lane->new(
+							     lane_name => $ref->[0],
+							     sample_id => $ref->[1],
+							     processed => $ref->[2],
+							     study_name => $ref->[3],
+							     storage_path => defined $ref->[4] && $ref->[4] ne '' ? $ref->[4] : 'no storage path retrieved'
+							    );
     push(@lanes, $lane);
   }
   $sth->finish();
@@ -83,15 +100,8 @@ sub _use_sqllite_test_db {
   }
   $dbh->disconnect();
 }
-sub _destroy_test_db {
-  my $dsn = 'DBI:SQLite:dbname=t/data/database/test.db';
-  my $dbh = DBI->connect($dsn);
-  my @sql = read_file('t/data/database/destroy_test_db.sql');
-  for my $drop (@sql) {
-    $dbh->do($drop);
-  }
-  $dbh->disconnect();
-}
+
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;

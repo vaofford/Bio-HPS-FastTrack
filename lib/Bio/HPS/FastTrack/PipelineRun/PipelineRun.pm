@@ -9,7 +9,7 @@ my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new
 =cut
 
 use Moose;
-use Bio::HPS::FastTrack::Study;
+use Bio::HPS::FastTrack::VRTrackObject::Study;
 use Bio::HPS::FastTrack::Config;
 use Bio::HPS::FastTrack::Exception;
 
@@ -18,12 +18,14 @@ has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
 has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'NA');
 
 has 'allowed_processed_flags' => ( is => 'rw', isa => 'HashRef', default => sub { {} });
-has 'study' => ( is => 'rw', isa => 'Int', required => 1);
+has 'study' => ( is => 'rw', isa => 'Int', lazy => 1, default => '' );
+has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
 has 'db_alias' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_db_alias' );
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Study', lazy => 1, builder => '_build_study_metadata') ;
+has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Lane', lazy => 1, builder => '_build_lane_metadata') ;
 has 'config_data' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config', lazy => 1, builder => '_build_config_data') ;
 
 sub BUILD {
@@ -84,6 +86,14 @@ sub _build_study_metadata {
 
   my ($self) = @_;
   my $study = Bio::HPS::FastTrack::Study->new( study => $self->study(), database => $self->database(), mode => $self->mode  );
+  $study->lanes();
+  return $study;
+}
+
+sub _build_lane_metadata {
+
+  my ($self) = @_;
+  my $study = Bio::HPS::FastTrack::Lane->new(  lane_name => $self->lane(), database => $self->database(), mode => $self->mode  );
   $study->lanes();
   return $study;
 }
