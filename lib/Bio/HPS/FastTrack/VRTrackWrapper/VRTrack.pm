@@ -1,10 +1,10 @@
-package Bio::HPS::FastTrack::VRTrackObject::VRTrack;
+package Bio::HPS::FastTrack::VRTrackWrapper::VRTrack;
 
 # ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
 
 =head1 SYNOPSIS
 
-my $hps_lane = Bio::HPS::FastTrack::VRTrackObject::Lane->new(lane_name => $name, sample_id => $sample_id, processed => $processed_flag});
+my $hps_vrtrack = Bio::HPS::FastTrack::VRTrackWrapper::VRTrack->new(host => 'host', => port => 'port', database => 'database', user => 'user');
 
 =cut
 

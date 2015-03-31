@@ -7,16 +7,18 @@ BEGIN { unshift( @INC, './t/lib' ) }
 BEGIN {
   use Test::Most;
   use Test::Exception;
-  use_ok('Bio::HPS::FastTrack::VRTrackObject::Lane');
+  use_ok('Bio::HPS::FastTrack::VRTrackWrapper::Lane');
 }
 
 
-my $hps_lane = Bio::HPS::FastTrack::VRTrackObject::Lane->new(
+isa_ok ( my $hps_lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
 							     database => 'pathogen_prok_track_test',
 							     mode => 'prod',
 							     lane_name => '7229_2#35',
-							    );
-$hps_lane->vrlane();
+							    ),
+   'Bio::HPS::FastTrack::VRTrackWrapper::Lane');
+
+isa_ok ( $hps_lane->vrlane(), 'VRTrack::Lane');
 print Dumper($hps_lane);
 
 

@@ -6,35 +6,23 @@ BEGIN { unshift( @INC, './lib' ) }
 BEGIN { unshift( @INC, './t/lib' ) }
 BEGIN {
   use Test::Most;
-  use_ok('Bio::HPS::FastTrack::VRTrackObject::Study');
+  use_ok('Bio::HPS::FastTrack::VRTrackWrapper::Study');
   }
 
-#my %test_database_lookup = ( 'pathogen_prok_track_external' => 't/data/database/test.db' );
-
-ok( my $study = Bio::HPS::FastTrack::VRTrackObject::Study->new(study => 2027, database => 'pathogen_prok_track_test', mode => 'prod'), 'Study object creation' );
-isa_ok( $study, 'Bio::HPS::FastTrack::VRTrackObject::Study', 'Study object');
+ok( my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new(study => 2027, database => 'pathogen_prok_track_test', mode => 'prod'), 'Study object creation' );
+isa_ok( $study, 'Bio::HPS::FastTrack::VRTrackWrapper::Study', 'Study object');
 isa_ok ( $study->vrtrack(), 'VRTrack::VRTrack' );
 isa_ok( $study->vrtrack_study(), 'VRTrack::Project');
 isa_ok( $study->lanes(), 'HASH' );
-#print Dumper($study);
-
 for my $lane(sort keys %{$study->lanes}) {
   isa_ok ( $study->lanes->{$lane}, 'VRTrack::Lane');
 }
-#$study->vrtrack_study();
+
 print Dumper($study);
-#
+
 
 =head
 
-ok( my $study = Bio::HPS::FastTrack::VRTrackObject::Study->new(study => 2027, database => 't/data/database/test.db' , mode => 'test'), 'Study object creation' );
-isa_ok( $study, 'Bio::HPS::FastTrack::VRTrackObject::Study', 'Study object');
-isa_ok( $study->vrtrack_study, 'VRTrack::Study', 'VR study object');
-isa_ok($study->lanes()->[0], 'Bio::HPS::FastTrack::VRTrackObject::Lane', 'Lane object');
-
-for my $l(@{$study->lanes()}) {
-  $l->pipeline_stage();
-}
 
 is($study->study_name, 'Comparative_RNA_seq_analysis_of_three_bacterial_species', 'Study name');
 

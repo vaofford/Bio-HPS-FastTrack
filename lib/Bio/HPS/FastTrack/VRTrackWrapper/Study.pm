@@ -1,22 +1,22 @@
-package Bio::HPS::FastTrack::VRTrackObject::Study;
+package Bio::HPS::FastTrack::VRTrackWrapper::Study;
 
 # ABSTRACT: Fast track high priority samples through the Pathogen Informatics pipelines
 
 =head1 SYNOPSIS
 
-  my $hps_study = Bio::HPS::FastTrack::VRTrackObject::Study->new( id => '123', database => 'pathogen_prok_track_test')
+my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new(study => 2027, database => 'pathogen_prok_track_test', mode => 'prod'), 'Study object creation' );
 
 =cut
 
 use Moose;
 use DBI;
 use File::Slurp;
-use Bio::HPS::FastTrack::VRTrackObject::Lane;
+use Bio::HPS::FastTrack::VRTrackWrapper::Lane;
 use VRTrack::Project;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
 use Data::Dumper;
-extends('Bio::HPS::FastTrack::VRTrackObject::VRTrack');
+extends('Bio::HPS::FastTrack::VRTrackWrapper::VRTrack');
 
 has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
 has 'vrtrack_study' => ( is => 'rw', isa => 'VRTrack::Project', lazy => 1, builder => '_build_vrtrack_study');
@@ -66,13 +66,12 @@ END_OF_SQL
   my $sth = $dbh->prepare($sql);
   $sth->execute();
   while (my $ref = $sth->fetchrow_arrayref()) {
-    my $lane = Bio::HPS::FastTrack::VRTrackObject::Lane->new(
+    my $lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(
 							     database => $self->database,
 							     mode => $self->mode,
 							     lane_name => $ref->[0]
 							    )->vrlane;
     $lanes{$lane->hierarchy_name} = $lane;
-    #push(@lanes, $lane);
   }
   $sth->finish();
 
