@@ -9,7 +9,8 @@ my $mapping_analysis_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new
 =cut
 
 use Moose;
-use Bio::HPS::FastTrack::VRTrackObject::Study;
+use Bio::HPS::FastTrack::VRTrackWrapper::Study;
+use Bio::HPS::FastTrack::VRTrackWrapper::Lane;
 use Bio::HPS::FastTrack::Config;
 use Bio::HPS::FastTrack::Exception;
 
@@ -24,8 +25,8 @@ has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'pipeline_runner' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_pipeline_runner' );
 has 'db_alias' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_db_alias' );
-has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Study', lazy => 1, builder => '_build_study_metadata') ;
-has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Lane', lazy => 1, builder => '_build_lane_metadata') ;
+has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Study', lazy => 1, builder => '_build_study_metadata') ;
+has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Lane', lazy => 1, builder => '_build_lane_metadata') ;
 has 'config_data' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config', lazy => 1, builder => '_build_config_data') ;
 
 sub BUILD {
@@ -85,7 +86,7 @@ sub _build_pipeline_runner {
 sub _build_study_metadata {
 
   my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::Study->new( study => $self->study(), database => $self->database(), mode => $self->mode  );
+  my $study = Bio::HPS::FastTrack::VRTrackWrapper::Study->new( study => $self->study(), database => $self->database(), mode => $self->mode  );
   $study->lanes();
   return $study;
 }
@@ -93,7 +94,7 @@ sub _build_study_metadata {
 sub _build_lane_metadata {
 
   my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::Lane->new(  lane_name => $self->lane(), database => $self->database(), mode => $self->mode  );
+  my $study = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(  lane_name => $self->lane(), database => $self->database(), mode => $self->mode  );
   $study->lanes();
   return $study;
 }
@@ -102,7 +103,7 @@ sub _build_config_data {
 
   my ($self) = @_;
   my $config = Bio::HPS::FastTrack::Config->new(
-						study_name => $self->study_metadata()->study_name(),
+						study_name => $self->study_metadata()->vrtrack_study->hierarchy_name(),
 						database => $self->database(),
 						db_alias => $self->db_alias(),
 						add_to_config_path => $self->add_to_config_path(),

@@ -10,3 +10,6 @@ BEGIN {
   }
 
 ok( my $import_runner = Bio::HPS::FastTrack::PipelineRun::Import->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Mapping runner object');
+
+
+done_testing();
