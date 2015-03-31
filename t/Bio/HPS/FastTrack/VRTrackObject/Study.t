@@ -13,7 +13,11 @@ BEGIN {
 
 ok( my $study = Bio::HPS::FastTrack::VRTrackObject::Study->new(study => 2027, database => 'pathogen_prok_track_test', mode => 'prod'), 'Study object creation' );
 isa_ok( $study, 'Bio::HPS::FastTrack::VRTrackObject::Study', 'Study object');
-isa_ok( $study->vrtrack_study, 'VRTrack::Study', 'VR study object');
+isa_ok ( $study->vrtrack(), 'VRTrack::VRTrack' );
+isa_ok( $study->vrtrack_study(), 'VRTrack::Project');
+#$study->vrtrack_study();
+#print Dumper($study);
+#
 
 =head
 

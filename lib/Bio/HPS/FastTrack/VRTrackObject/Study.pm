@@ -12,14 +12,15 @@ use Moose;
 use DBI;
 use File::Slurp;
 use Bio::HPS::FastTrack::VRTrackObject::Lane;
-use VRTrack::Study;
+use VRTrack::Project;
 use Bio::HPS::FastTrack::Exception;
 use Bio::HPS::FastTrack::Types::FastTrackTypes;
+use Data::Dumper;
 extends('Bio::HPS::FastTrack::VRTrackObject::VRTrack');
 
 has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
 #has 'lanes' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_list_of_lanes_for_study');
-has 'vrtrack_study' => ( is => 'rw', isa => 'ArrayRef', lazy => 1, builder => '_build_vrtrack_study_object');
+has 'vrtrack_study' => ( is => 'rw', isa => 'VRTrack::Project', lazy => 1, builder => '_build_vrtrack_study');
 has 'study_name' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'NA' );
 
 sub _build_list_of_lanes_for_study {
@@ -27,11 +28,11 @@ sub _build_list_of_lanes_for_study {
   $self->_get_lane_data_from_database();
 }
 
-sub _build_vrtrack_study_object {
+sub _build_vrtrack_study {
 
   my ($self) = @_;
-  my $study_obj = VRTrack::Study->new( $self->vrtrack(), $self->study);
-  return $study_obj;
+  my $vrtrack_study = VRTrack::Project->new_by_ssid( $self->vrtrack(), $self->study);
+  return $vrtrack_study;
 
 }
 

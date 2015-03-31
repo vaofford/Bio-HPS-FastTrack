@@ -10,7 +10,10 @@ BEGIN {
   use_ok('Bio::HPS::FastTrack::VRTrackObject::VRTrack');
 }
 
-my $hps_vrtrack = Bio::HPS::FastTrack::VRTrackObject::VRTrack->new( database => 'pathogen_prok_track_test', mode => 'prod');
-print Dumper($hps_vrtrack->vrtrack);
+isa_ok ( my $hps_vrtrack = Bio::HPS::FastTrack::VRTrackObject::VRTrack->new( database => 'pathogen_prok_track_test', mode => 'prod'), 'Bio::HPS::FastTrack::VRTrackObject::VRTrack' );
+isa_ok ( my $vrtrack_obj = $hps_vrtrack->vrtrack(), 'VRTrack::VRTrack' );
+
+
+#print Dumper($project);
 
 done_testing();
