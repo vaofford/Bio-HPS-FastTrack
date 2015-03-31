@@ -15,8 +15,14 @@ ok( my $study = Bio::HPS::FastTrack::VRTrackObject::Study->new(study => 2027, da
 isa_ok( $study, 'Bio::HPS::FastTrack::VRTrackObject::Study', 'Study object');
 isa_ok ( $study->vrtrack(), 'VRTrack::VRTrack' );
 isa_ok( $study->vrtrack_study(), 'VRTrack::Project');
-#$study->vrtrack_study();
+isa_ok( $study->lanes(), 'HASH' );
 #print Dumper($study);
+
+for my $lane(sort keys %{$study->lanes}) {
+  isa_ok ( $study->lanes->{$lane}, 'VRTrack::Lane');
+}
+#$study->vrtrack_study();
+print Dumper($study);
 #
 
 =head

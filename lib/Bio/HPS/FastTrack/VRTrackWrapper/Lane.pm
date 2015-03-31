@@ -14,17 +14,11 @@ extends('Bio::HPS::FastTrack::VRTrackObject::VRTrack');
 
 has 'lane_name'      => ( is => 'rw', isa => 'Str', required => 1 );
 has 'vrlane' => ( is => 'rw', isa => 'VRTrack::Lane', lazy => 1, builder => '_build_vrtrack_lane' );
-has 'sample_id'      => ( is => 'rw', isa => 'Str', required => 1 );
-has 'processed'      => ( is => 'rw', isa => 'Int', required => 1 );
-has 'study_name'     => ( is => 'rw', isa => 'Str', required => 1 );
-has 'storage_path'   => ( is => 'rw', isa => 'LaneStoragePath', required => 1 );
-has 'pipeline_stage' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'no flag' );
 
 sub _build_vrtrack_lane {
 
   my ($self) = @_;
-
-  my $vrlane = VRTrack::Lane->new_by_name($self->vrtrack, '11250_1#27');
+  my $vrlane = VRTrack::Lane->new_by_name($self->vrtrack, $self->lane_name);
   return $vrlane;
 }
 
