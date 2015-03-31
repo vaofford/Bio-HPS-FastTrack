@@ -19,7 +19,7 @@ use Data::Dumper;
 extends('Bio::HPS::FastTrack::VRTrackWrapper::VRTrack');
 
 has 'study' => ( is => 'rw', isa => 'Int', required => 1 );
-has 'vrtrack_study' => ( is => 'rw', isa => 'VRTrack::Project', lazy => 1, builder => '_build_vrtrack_study');
+has 'vrtrack_study' => ( is => 'rw', isa => 'VRProject', lazy => 1, builder => '_build_vrtrack_study');
 has 'lanes' => ( is => 'rw', isa => 'HashRef', lazy => 1, builder => '_build_list_of_lanes_for_study');
 
 sub _build_list_of_lanes_for_study {
@@ -32,9 +32,23 @@ sub _build_vrtrack_study {
 
   my ($self) = @_;
   my $vrtrack_study = VRTrack::Project->new_by_ssid( $self->vrtrack(), $self->study);
-  return $vrtrack_study;
+  if (defined $vrtrack_study && $vrtrack_study ne qq() ) {
+    return $vrtrack_study;
+  }
+  else {
+    return _study_not_found($self->study);
+  }
 }
 
+sub _study_not_found {
+  my ($study_id) = @_;
+  my %study_not_found = (
+			 study_id => $study_id,
+			 status   => 'study not found in tracking database'
+			);
+  bless(\%study_not_found, "VRProject");
+  return \%study_not_found;
+}
 
 sub _get_lane_data_from_database {
 

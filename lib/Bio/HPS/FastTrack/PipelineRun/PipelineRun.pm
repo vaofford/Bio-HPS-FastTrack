@@ -17,9 +17,9 @@ use Bio::HPS::FastTrack::Exception;
 has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
 has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'NA');
 has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'NA');
+has 'pipeline_exec' => ( is => 'ro' => isa => 'Str', default => 'NA' );
 
-has 'allowed_processed_flags' => ( is => 'rw', isa => 'HashRef', default => sub { {} });
-has 'study' => ( is => 'rw', isa => 'Int', lazy => 1, default => '' );
+has 'study' => ( is => 'rw', isa => 'Int', lazy => 1, default => '0' );
 has 'lane' => ( is => 'rw', isa => 'Str', lazy => 1, default => '');
 has 'database'   => ( is => 'rw', isa => 'Str', required => 1 );
 has 'mode'   => ( is => 'rw', isa => 'Str', required => 1 );
@@ -28,34 +28,7 @@ has 'db_alias' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_db_a
 has 'study_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Study', lazy => 1, builder => '_build_study_metadata') ;
 has 'lane_metadata' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::VRTrackWrapper::Lane', lazy => 1, builder => '_build_lane_metadata') ;
 has 'config_data' => ( is => 'rw', isa => 'Bio::HPS::FastTrack::Config', lazy => 1, builder => '_build_config_data') ;
-
-sub BUILD {
-
-  my ($self) = @_;
-  $self->allowed_processed_flags($self->_allowed_processed_flags());
-
-}
-
-sub _allowed_processed_flags {
-
-  my ($self) = @_;
-
-  my %flags = (import => 1,
-	       qc => 2,
-	       mapped => 4,
-	       stored => 8,
-	       deleted => 16,
-	       swapped => 32,
-	       altered_fastq => 64,
-	       improved => 128,
-	       snp_called => 256,
-	       rna_seq_expression => 512,
-	       assembled  => 1024,
-	       annotated  => 2048,
-	      );
- 
-  return \%flags;
-}
+has 'pipeline_stage' => ( is => 'rw', isa => 'HashRef', lazy => 1, default => sub { {} } );
 
 sub _build_db_alias {
 
@@ -67,7 +40,7 @@ sub _build_db_alias {
 				'pathogen_helminth_track' => 'helminths',
 				'pathogen_rnd_track'      => 'rnd'
 			       );
-  
+
   if ( $database_aliases{$self->database()} ) {
     return( $database_aliases{$self->database()} );
   }
@@ -94,9 +67,9 @@ sub _build_study_metadata {
 sub _build_lane_metadata {
 
   my ($self) = @_;
-  my $study = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(  lane_name => $self->lane(), database => $self->database(), mode => $self->mode  );
-  $study->lanes();
-  return $study;
+  my $lane = Bio::HPS::FastTrack::VRTrackWrapper::Lane->new(  lane_name => $self->lane(), database => $self->database(), mode => $self->mode  );
+  $lane->vrlane();
+  return $lane;
 }
 
 sub _build_config_data {
@@ -108,7 +81,7 @@ sub _build_config_data {
 						db_alias => $self->db_alias(),
 						add_to_config_path => $self->add_to_config_path(),
 						mode => $self->mode()
-					       );  
+					       );
   return $config;
 
 }
@@ -116,25 +89,90 @@ sub _build_config_data {
 sub run {
 
   my ($self) = @_;
-  $self->_is_pipeline_stage_done();
-  
-}
 
-sub _is_pipeline_stage_done {
-
-  my ($self) = @_;
-  my $study_lanes = $self->study_metadata()->lanes();
-  for my $lane(@$study_lanes) {
-    if( ($lane->processed() & $self->allowed_processed_flags()->{$self->stage_done}) == 0 ) {
-      $lane->pipeline_stage($self->stage_not_done);
-    }
-    else {
-      $lane->pipeline_stage($self->stage_done);
-    }
+  if ( $self->study ) {
+    $self->_is_pipeline_stage_done_for_lanes();
+  }
+  else {
+    $self->_is_pipeline_stage_done_for_lane();
   }
 
 }
 
+sub _is_pipeline_stage_done_for_lanes {
+
+  my ($self) = @_;
+  my $study_lanes = $self->study_metadata()->lanes();
+  my %pipeline_stage;
+  my @run_ids;
+
+  for my $lane(sort keys %{$study_lanes}) {
+    my $run_id = _set_run_id_for_lane($lane);
+    if( ($study_lanes->{$lane}->processed() & $self->_allowed_processed_flags() ) == 0 ) {
+      $pipeline_stage{$lane}{'stage'} = $self->stage_not_done;
+      $pipeline_stage{$lane}{'run_id'} = $run_id;
+    }
+    else {
+      $pipeline_stage{$lane}{'stage'} = $self->stage_done;
+      $pipeline_stage{$lane}{'run_id'} = $run_id;
+    }
+  }
+
+  $self->pipeline_stage(\%pipeline_stage);
+}
+
+sub _is_pipeline_stage_done_for_lane {
+
+  my ($self) = @_;
+  my $lane = $self->lane_metadata()->vrlane;
+  my %pipeline_stage;
+
+  my $run_id = _set_run_id_for_lane($self->lane_metadata->lane_name);
+  $pipeline_stage{'run_id'} = $run_id;
+
+  unless ( defined $lane->{status} ) {
+    if( ($lane->processed() & $self->_allowed_processed_flags) == 0 ) {
+      $pipeline_stage{'stage'} = $self->stage_not_done;
+    }
+    else {
+      $pipeline_stage{'stage'} = $self->stage_done;
+    }
+  }
+  else {
+    $pipeline_stage{'stage'} = $self->stage_not_done;
+  }
+
+  $self->pipeline_stage(\%pipeline_stage);
+}
+
+sub _set_run_id_for_lane {
+
+  my ($lane) = @_;
+  my $run_id = $lane;
+  $run_id =~ s/\#[0-9]*//;
+  return $run_id;
+}
+
+sub _allowed_processed_flags {
+
+  my ($self) = @_;
+
+  my %flags = (import => 1,
+	       qc => 2,
+	       mapped => 4,
+	       stored => 8,
+	       deleted => 16,
+	       swapped => 32,
+	       altered_fastq => 64,
+	       improved => 128,
+	       snp_called => 256,
+	       rna_seq_expression => 512,
+	       assembled  => 1024,
+	       annotated  => 2048,
+	      );
+
+  return $flags{$self->stage_done};
+}
 
 
 no Moose;

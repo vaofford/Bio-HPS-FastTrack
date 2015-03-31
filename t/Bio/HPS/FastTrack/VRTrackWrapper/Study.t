@@ -20,6 +20,18 @@ for my $lane(sort keys %{$study->lanes}) {
 
 print Dumper($study);
 
+ok( my $study2 = Bio::HPS::FastTrack::VRTrackWrapper::Study->new(study => 20, database => 'pathogen_prok_track_test', mode => 'prod'), 'Study object creation' );
+isa_ok( $study2, 'Bio::HPS::FastTrack::VRTrackWrapper::Study', 'Study object');
+isa_ok ( $study2->vrtrack(), 'VRTrack::VRTrack' );
+isa_ok( $study2->vrtrack_study(), 'VRProject');
+isa_ok( $study2->lanes(), 'HASH' );
+for my $lane(sort keys %{$study2->lanes}) {
+  isa_ok ( $study2->lanes->{$lane}, 'VRTrack::Lane');
+}
+
+print Dumper($study2);
+
+
 
 =head
 

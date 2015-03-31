@@ -42,3 +42,38 @@ sub validate_storage_path {
     return 0;
   }
 }
+
+subtype 'VRLane',
+  as 'Maybe[Object]',
+  where { validate_vrlane($_) },
+  message { "Invalid vrlane - '$_' -" };
+
+sub validate_vrlane {
+
+  my ($vrlane) = @_;
+  if ( eval { $vrlane->can("processed") } ) {
+    return 1;
+  }
+  else {
+    return 1 if ($vrlane->{status} eq 'lane not found in tracking database');
+  }
+  return 0;
+}
+
+subtype 'VRProject',
+  as 'Maybe[Object]',
+  where { validate_vrproject($_) },
+  message { "Invalid vrproject - '$_' -" };
+
+sub validate_vrproject {
+
+  my ($vrproject) = @_;
+  if ( eval { $vrproject->can("study_id") } ) {
+    return 1;
+  }
+  else {
+    return 1 if ($vrproject->{status} eq 'study not found in tracking database');
+  }
+
+  return 0;
+}

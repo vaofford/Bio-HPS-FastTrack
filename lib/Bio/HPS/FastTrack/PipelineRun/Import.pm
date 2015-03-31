@@ -11,7 +11,7 @@ my $import_runner = Bio::HPS::FastTrack::PipelineRun::Import->new(study =>  2027
 use Moose;
 extends('Bio::HPS::FastTrack::PipelineRun::PipelineRun');
 
-has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'imported');
+has 'stage_done'   => ( is => 'ro', isa => 'Str', default => 'import');
 has 'stage_not_done'   => ( is => 'ro', isa => 'Str', default => 'not imported');
 has 'add_to_config_path' => ( is => 'ro', isa => 'Str', default => 'import');
 

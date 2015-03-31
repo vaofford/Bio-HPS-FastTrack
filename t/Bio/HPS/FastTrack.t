@@ -15,8 +15,8 @@ is ( $hps_fast_track_run_mode1->study(), '2027', 'Study id comparison mapping');
 is ( $hps_fast_track_run_mode1->mode(), 'prod', 'Run mode');
 
 ok ( my $hps_fast_track_run_mode2 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'test' ), 'Creating mapping HPS::FastTrack object' );
-is ( $hps_fast_track_run_mode2->study(), '2027', 'Study id comparison mapping');
-is ( $hps_fast_track_run_mode2->mode(), 'test', 'Run mode');
+is ( $hps_fast_track_run_mode2->study(), '2027', 'Test study id comparison mapping');
+is ( $hps_fast_track_run_mode2->mode(), 'test', 'Test run mode');
 
 throws_ok { my $hps_fast_track_run_mode3 =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'blah' ) } qr/Invalid run mode -/, 'Invalid run mode';
 
@@ -34,6 +34,8 @@ is ( $hps_fast_track_mapping->study(), '2027', 'Study id comparison mapping');
 is ( $hps_fast_track_mapping->database(), 'pathogen_prok_track_test', 'Database name comparison mapping');
 is_deeply ( $hps_fast_track_mapping->pipeline(), ['mapping'], 'Pipeline types comparison mapping');
 isa_ok ( $hps_fast_track_mapping->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
+ok ( $hps_fast_track_mapping->pipeline_runners()->[0]->config_data()->config_root('blah/data/conf'), 'Setting false conf root path' );
+is ( $hps_fast_track_mapping->pipeline_runners()->[0]->config_data()->config_root(), 'blah/data/conf', 'Inexistent path now' );
 throws_ok { $hps_fast_track_mapping->run() } qr/sysopen: No such file or directory at/ , 'Non existent config root exception thrown' ;
 
 
@@ -115,12 +117,15 @@ ok ( my $hps_fast_track_all =  Bio::HPS::FastTrack->new( study => '2027', databa
 is ( $hps_fast_track_all->study(), '2027', 'Study id comparison all');
 is ( $hps_fast_track_all->database(), 'pathogen_prok_track_test', 'Database name comparison all');
 is_deeply ( $hps_fast_track_all->pipeline(), ['all'], 'Pipeline types comparison all');
-is (scalar @{$hps_fast_track_all->pipeline_runners()}, 5, 'All pipelines will be run all');
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[3], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
+is (scalar @{$hps_fast_track_all->pipeline_runners()}, 8, 'All pipelines will be run all');
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::Import' );
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::QC' );
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[3], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[6], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling' );
+isa_ok ( $hps_fast_track_all->pipeline_runners()->[7], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
 
 
 done_testing();

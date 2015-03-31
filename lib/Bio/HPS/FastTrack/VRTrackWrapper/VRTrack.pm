@@ -23,7 +23,6 @@ has 'port' => ( is => 'rw', isa => 'Int', lazy => 1, default => '3346' ); #Test 
 has 'user' => ( is => 'rw', isa => 'Str', lazy => 1, default => 'pathpipe_ro' );
 has 'vrtrack' => ( is => 'rw', isa => 'VRTrack::VRTrack', lazy => 1, builder => '_build_vrtrack_instance' );
 
-
 sub _build_vrtrack_instance {
 
   my ($self) = @_;
