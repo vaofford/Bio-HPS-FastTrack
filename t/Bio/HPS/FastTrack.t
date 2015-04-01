@@ -26,7 +26,7 @@ throws_ok { my $hps_fast_track_run_mode3 =  Bio::HPS::FastTrack->new( study => '
 # is ( $hps_fast_track->database(), 'bacteria', 'Database name comparison');
 # is_deeply ( $hps_fast_track->pipeline(), [], 'Pipeline types comparison');
 # isa_ok ( $hps_fast_track->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::PipelineRun' );
-ok ( my $hps_fast_track_non_existant_database = Bio::HPS::FastTrack->new( study => '2027', database => 'clown_database', mode => 'prod' ), 'Creating HPS::FastTrack object' );
+ok ( my $hps_fast_track_non_existant_database = Bio::HPS::FastTrack->new( study => '2027', database => 'clown_database', pipeline => ['mapping'], mode => 'prod' ), 'Creating HPS::FastTrack object' );
 throws_ok { $hps_fast_track_non_existant_database->run() } qr/Could not connect to database/ , 'Non existent database exception thrown' ;
 
 ok ( my $hps_fast_track_mapping =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['mapping'], mode => 'prod' ), 'Creating mapping HPS::FastTrack object' );
@@ -114,18 +114,6 @@ isa_ok ( $hps_fast_track_mapping_assembly_annotation->pipeline_runners()->[1], '
 isa_ok ( $hps_fast_track_mapping_assembly_annotation->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
 
 ok ( my $hps_fast_track_all =  Bio::HPS::FastTrack->new( study => '2027', database => 'pathogen_prok_track_test', pipeline => ['all'], mode => 'prod' ), 'Creating all pipelines HPS::FastTrack object' );
-is ( $hps_fast_track_all->study(), '2027', 'Study id comparison all');
-is ( $hps_fast_track_all->database(), 'pathogen_prok_track_test', 'Database name comparison all');
-is_deeply ( $hps_fast_track_all->pipeline(), ['all'], 'Pipeline types comparison all');
-is (scalar @{$hps_fast_track_all->pipeline_runners()}, 8, 'All pipelines will be run all');
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::Import' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::QC' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[3], 'Bio::HPS::FastTrack::PipelineRun::Mapping' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::Annotation' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[6], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling' );
-isa_ok ( $hps_fast_track_all->pipeline_runners()->[7], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis' );
-
+throws_ok { $hps_fast_track_all->pipeline_runners() } qr/The requested pipeline is not supported/, 'Throws exception if pipeline is not supported';
 
 done_testing();

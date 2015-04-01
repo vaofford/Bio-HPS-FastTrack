@@ -12,8 +12,6 @@ BEGIN {
 ok( my $pipeline_runner = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Pipeline runner object');
 isa_ok ( $pipeline_runner, 'Bio::HPS::FastTrack::PipelineRun::PipelineRun' );
 is( $pipeline_runner->db_alias, 'no alias', 'Standard database' );
-is ( $pipeline_runner->allowed_processed_flags()->{'import'}, 1, 'Import flag');
-is ( $pipeline_runner->allowed_processed_flags()->{'qc'}, 2, 'QC flag');
 ok ( my $study = $pipeline_runner->study_metadata(), 'Creating study object');
 isa_ok ( $study, 'Bio::HPS::FastTrack::VRTrackWrapper::Study');
 ok ( $study->lanes(), 'Collecting lanes');
@@ -32,5 +30,4 @@ is( $pipeline_runner2->db_alias, 'prokaryotes', 'Non standard database' );
 
 ok( my $pipeline_runner3 = Bio::HPS::FastTrack::PipelineRun::PipelineRun->new( lane => '7138_6#17' , database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Pipeline runner object');
 
-print Dumper($pipeline_runner3);
 done_testing();

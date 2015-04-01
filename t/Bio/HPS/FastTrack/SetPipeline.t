@@ -10,15 +10,21 @@ BEGIN {
     use_ok('Bio::HPS::FastTrack::SetPipeline');
   }
 
-ok( my $pipeline = Bio::HPS::FastTrack::SetPipeline->new( study => 2027, database => 'pathogen_prok_track_test', pipeline => ['all'], mode => 'prod' ), 'Creating a SetPipeline object');
+ok (my $bogus_pipeline = Bio::HPS::FastTrack::SetPipeline->new( study => 2027, database => 'pathogen_prok_track_test', pipeline => ['blah'], mode => 'prod' ), "Bogus object creation");
+throws_ok { $bogus_pipeline->pipeline_runners() } qr/Error: The requested pipeline is not supported/ ,
+  'Non existent pipeline exception thrown' ;
+
+ok (my $pipeline = Bio::HPS::FastTrack::SetPipeline->new( study => 2027, database => 'pathogen_prok_track_test', pipeline => ['update','import','qc','mapping','assembly','annotation','snp-calling','rna-seq'], mode => 'prod' ), 'Object Creation');
 isa_ok ( $pipeline, 'Bio::HPS::FastTrack::SetPipeline', 'SetPipeline module hook' );
-is (scalar @{$pipeline->pipeline_runners()}, 7, 'All pipelines will be run');
-isa_ok ( $pipeline->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Import', 'PipelineRun module hook' );
-isa_ok ( $pipeline->pipeline_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::QC', 'PipelineRun module hook' );
-isa_ok ( $pipeline->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::Mapping', 'PipelineRun module hook' );
-isa_ok ( $pipeline->pipeline_runners()->[3], 'Bio::HPS::FastTrack::PipelineRun::Assembly', 'PipelineRun module hook' );
-isa_ok ( $pipeline->pipeline_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::Annotation', 'PipelineRun module hook' );
-isa_ok ( $pipeline->pipeline_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling', 'PipelineRun module hook' );
-isa_ok ( $pipeline->pipeline_runners()->[6], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis', 'PipelineRun module hook' );
+is (scalar @{$pipeline->pipeline_runners()}, 8, 'All pipelines will be run');
+isa_ok ( $pipeline->pipeline_runners()->[0], 'Bio::HPS::FastTrack::PipelineRun::Update');
+isa_ok ( $pipeline->pipeline_runners()->[1], 'Bio::HPS::FastTrack::PipelineRun::Import');
+isa_ok ( $pipeline->pipeline_runners()->[2], 'Bio::HPS::FastTrack::PipelineRun::QC');
+isa_ok ( $pipeline->pipeline_runners()->[3], 'Bio::HPS::FastTrack::PipelineRun::Mapping');
+isa_ok ( $pipeline->pipeline_runners()->[4], 'Bio::HPS::FastTrack::PipelineRun::Assembly');
+isa_ok ( $pipeline->pipeline_runners()->[5], 'Bio::HPS::FastTrack::PipelineRun::Annotation');
+isa_ok ( $pipeline->pipeline_runners()->[6], 'Bio::HPS::FastTrack::PipelineRun::SNPCalling');
+isa_ok ( $pipeline->pipeline_runners()->[7], 'Bio::HPS::FastTrack::PipelineRun::RNASeqAnalysis');
+
 
 done_testing();
