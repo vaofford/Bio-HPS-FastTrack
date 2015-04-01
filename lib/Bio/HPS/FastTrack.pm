@@ -35,7 +35,8 @@ sub run {
       $pipeline_runner->run();
     }
   }
-  if ( defined $self->study && $self->lane eq 'NA' ) {
+  if ( defined $self->study && (!defined $self->lane || $self->lane eq 'NA') ) {
+
     for my $pipeline_runner(@{$self->pipeline_runners()}) {
       $pipeline_runner->study_metadata();
       $pipeline_runner->run();

@@ -12,23 +12,19 @@ BEGIN {
 ok( my $assembly_runner = Bio::HPS::FastTrack::PipelineRun::Assembly->new( study =>  2027, database => 'pathogen_prok_track_test', mode => 'prod' ), 'Creating a Assembly runner object');
 isa_ok ( $assembly_runner, 'Bio::HPS::FastTrack::PipelineRun::Assembly' );
 ok ( my $study = $assembly_runner->study_metadata(), 'Creating study object');
-isa_ok ( $study, 'Bio::HPS::FastTrack::Study');
+isa_ok ( $study, 'Bio::HPS::FastTrack::VRTrackWrapper::Study');
 ok ( $study->lanes(), 'Collecting lanes');
 
 $assembly_runner->run();
 
-isa_ok ($study->lanes()->[0], 'Bio::HPS::FastTrack::Lane');
-is( $study->lanes()->[0]->study_name(), 'Comparative_RNA_seq_analysis_of_three_bacterial_species', 'Study name not assembled');
-is( $study->lanes()->[0]->sample_id(), 79, 'Sample ID not assembled');
-is( $study->lanes()->[0]->processed(), 15, 'Processed flag not assembled');
-is( $study->lanes()->[0]->lane_name(), '7138_6#17', 'Lane name not assembled');
-is( $study->lanes()->[0]->pipeline_stage(), 'not assembled', 'Pipeline stage not assembled');
+isa_ok ($study->lanes()->{'7138_6#17'}, 'VRTrack::Lane');
+is( $assembly_runner->study_metadata->vrtrack_study->hierarchy_name(), 'Comparative_RNA_seq_analysis_of_three_bacterial_species', 'Study name not assembled');
+is( $study->lanes()->{'7138_6#17'}->processed(), 15, 'Processed flag not assembled');
+is( $study->lanes()->{'7138_6#17'}->hierarchy_name(), '7138_6#17', 'Lane name not assembled');
 
-is( $study->lanes()->[1]->study_name(), 'Comparative_RNA_seq_analysis_of_three_bacterial_species', 'Study name assembled');
-is( $study->lanes()->[1]->sample_id(), 76, 'Sample ID assembled');
-is( $study->lanes()->[1]->processed(), 1035, 'Processed flag assembled');
-is( $study->lanes()->[1]->lane_name(), '7153_1#20', 'Lane name assembled');
-is( $study->lanes()->[1]->pipeline_stage(), 'assembled', 'Pipeline stage assembled');
+is( $study->lanes()->{'7153_1#20'}->processed(), 1035, 'Processed flag assembled');
+is( $study->lanes()->{'7153_1#20'}->hierarchy_name(), '7153_1#20', 'Lane name assembled');
+
 
 ok ( my $config = $assembly_runner->config_data(), 'Creating config object');
 is ( $config->config_root(), '/nfs/pathnfs05/conf', 'Root path of config files');

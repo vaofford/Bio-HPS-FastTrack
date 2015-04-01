@@ -25,14 +25,14 @@ has 'path_to_high_level_config' => ( is => 'rw', isa => 'Str', lazy => 1, builde
 has 'path_to_low_level_config' => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_path_to_low_level_config');
 
 sub _build_path_to_high_level_config {
-  
+
   my ($self) = @_;
   my $high_level_conf_filename = $self->database() . '_' . $self->add_to_config_path() . '_' . 'pipeline.conf';
 
   if( $self->mode eq 'test' ) {
     $self->config_root('t/data/conf/');
   }
-  
+
   my $path;
   if( $self->db_alias eq 'no alias' ) {
     $path = File::Spec->catfile($self->config_root(), $self->database(), $high_level_conf_filename) ||
@@ -53,7 +53,6 @@ sub _build_path_to_low_level_config {
   my ($self) = @_;
 
   my @lines = read_file( $self->path_to_high_level_config );
-
   my @split;
   for my $line(@lines) {
     chomp($line);
@@ -62,7 +61,8 @@ sub _build_path_to_low_level_config {
       @split = split(' ', $line);
     }
   }
-  return $split[1];
+  return $split[1] if ( defined $split[1] && $split[1] ne q());
+  return 'Study not found in high level config file';
 }
 
 no Moose;
